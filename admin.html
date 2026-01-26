@@ -1,86 +1,98 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Nexus Viet Air Cargo – Admin</title>
+  <meta charset="UTF-8">
+  <title>Nexus Viet Air Cargo – Invoice</title>
+  <style>
+    body { font-family: Arial; max-width: 800px; margin: auto; }
+    h1 { margin-bottom: 5px; }
+    .company { margin-bottom: 20px; }
+    .section { margin-top: 15px; }
+    .label { font-weight: bold; }
+    button { padding: 8px 14px; margin-top: 20px; }
+  </style>
 </head>
+
 <body>
 
-<h2>Create Shipment</h2>
+<h1>Nexus Viet Air Cargo</h1>
 
-<form id="shipmentForm">
+<div class="company">
+  Phone: +95 9444 679 446<br>
+  Email: info@nexusgroupmyanmar.com<br>
+  Address: No 9, 3A, MyintMo Street, Sanchaung, Yangon, Myanmar
+</div>
 
-Sender Name: <input id="sender_name" required><br><br>
-Sender Phone: <input id="sender_phone"><br><br>
+<hr>
 
-Receiver Name: <input id="receiver_name"><br><br>
-Receiver Phone: <input id="receiver_phone"><br><br>
-Receiver Address:<br>
-<textarea id="receiver_address"></textarea><br><br>
+<div class="section">
+  <span class="label">Invoice No:</span> <span id="invoice"></span><br>
+  <span class="label">Tracking No:</span> <span id="tracking"></span><br>
+  <span class="label">Status:</span> <span id="status"></span>
+</div>
 
-Route: <input id="route"><br><br>
-Flight Date: <input type="date" id="flight"><br><br>
+<hr>
 
-Item Description: <input id="item"><br><br>
+<div class="section">
+  <h3>Sender</h3>
+  Name: <span id="sender_name"></span><br>
+  Phone: <span id="sender_phone"></span>
+</div>
 
-Quantity (packages): <input type="number" id="quantity"><br><br>
-Handling Fee per package (MMK): <input type="number" id="handling"><br><br>
+<div class="section">
+  <h3>Receiver</h3>
+  Name: <span id="receiver_name"></span><br>
+  Phone: <span id="receiver_phone"></span><br>
+  Address: <span id="receiver_address"></span>
+</div>
 
-Weight (KG): <input type="number" id="weight"><br><br>
-Rate per KG (MMK): <input type="number" id="rate"><br><br>
+<hr>
 
-Status:
-<select id="status">
-  <option>Received</option>
-  <option>In Transit</option>
-  <option>Arrived</option>
-  <option>Delivered</option>
-</select><br><br>
+<div class="section">
+  Route: <span id="route"></span><br>
+  Flight Date: <span id="flight_date"></span><br>
+  Item: <span id="item_desc"></span><br>
+  Quantity: <span id="quantity"></span><br>
+  Weight (KG): <span id="weight"></span>
+</div>
 
-<button type="submit">Generate Invoice</button>
+<hr>
 
-</form>
+<div class="section">
+  Handling Fee (MMK): <span id="handling"></span><br>
+  Total MMK: <strong><span id="total_mmk"></span></strong>
+</div>
+
+<button onclick="window.print()">Print Invoice</button>
 
 <script>
-document.getElementById("shipmentForm").onsubmit = async function(e) {
-  e.preventDefault();
+const params = new URLSearchParams(window.location.search);
+const tracking = params.get("tracking");
 
-  const tracking = "NXS-" + Date.now();
-  const invoice = "INV-" + new Date().getFullYear() + "-" + Math.floor(Math.random()*1000);
+document.getElementById("tracking").innerText = tracking;
 
-  const quantity = Number(document.getElementById("quantity").value);
-  const handling = Number(document.getElementById("handling").value);
-  const weight = Number(document.getElementById("weight").value);
-  const rate = Number(document.getElementById("rate").value);
+fetch("https://script.google.com/macros/s/AKfycbwoyNzupluztEPyAKdm7jhu8RA-VZkBZ-dBb9Iyu6gDK0oEn_6DMrJgg5SQ6_GA_0wk/exec=" + tracking)
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById("invoice").innerText = data.invoice_no;
+    document.getElementById("status").innerText = data.status;
 
-  const total = (quantity * handling) + (weight * rate);
+    document.getElementById("sender_name").innerText = data.sender_name;
+    document.getElementById("sender_phone").innerText = data.sender_phone;
 
-  const payload = {
-    tracking_no: tracking,
-    invoice_no: invoice,
-    sender_name: sender_name.value,
-    sender_phone: sender_phone.value,
-    receiver_name: receiver_name.value,
-    receiver_phone: receiver_phone.value,
-    receiver_address: receiver_address.value,
-    route: route.value,
-    flight_date: flight.value,
-    item_desc: item.value,
-    quantity: quantity,
-    handling_fee_mmk: quantity * handling,
-    weight_kg: weight,
-    rate_per_kg_mmk: rate,
-    subtotal_mmk: total,
-    total_mmk: total,
-    status: status.value
-  };
+    document.getElementById("receiver_name").innerText = data.receiver_name;
+    document.getElementById("receiver_phone").innerText = data.receiver_phone;
+    document.getElementById("receiver_address").innerText = data.receiver_address;
 
-  await fetch("https://script.google.com/macros/s/AKfycbwoyNzupluztEPyAKdm7jhu8RA-VZkBZ-dBb9Iyu6gDK0oEn_6DMrJgg5SQ6_GA_0wk/exec", {
-    method: "POST",
-    body: JSON.stringify(payload)
+    document.getElementById("route").innerText = data.route;
+    document.getElementById("flight_date").innerText = data.flight_date;
+    document.getElementById("item_desc").innerText = data.item_desc;
+    document.getElementById("quantity").innerText = data.quantity;
+    document.getElementById("weight").innerText = data.weight_kg;
+
+    document.getElementById("handling").innerText = data.handling_fee_mmk;
+    document.getElementById("total_mmk").innerText = data.total_mmk;
   });
-
-  window.open(`invoice.html?tracking=${tracking}`);
-};
 </script>
 
 </body>
