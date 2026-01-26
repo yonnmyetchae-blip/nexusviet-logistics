@@ -106,7 +106,14 @@ document.getElementById("shipmentForm").onsubmit = async function(e) {
     total_mmk: totalMMK,
     total_vnd: totalVND,
 
-    status: "Received",
+    <label>Status</label>
+<select id="status">
+  <option value="Received">Received</option>
+  <option value="In Transit">In Transit</option>
+  <option value="Arrived">Arrived</option>
+  <option value="Delivered">Delivered</option>
+</select>
+  
     remarks: ""
   };
 
