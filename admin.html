@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Nexus Admin</title>
+</head>
+<body>
+
+<h2>Create Shipment</h2>
+
+<form id="shipmentForm">
+  Customer Name: <input required id="customer"><br><br>
+  Phone: <input id="phone"><br><br>
+
+  Route:
+  <select id="route">
+    <option>YGN – DN</option>
+    <option>DN – YGN</option>
+    <option>YGN – SG</option>
+  </select><br><br>
+
+  Flight Date: <input type="date" id="flight"><br><br>
+  Item Description: <input id="item"><br><br>
+
+  Item Fee MMK: <input type="number" id="itemMMK"><br><br>
+  Item Fee VND: <input type="number" id="itemVND"><br><br>
+
+  Weight (KG): <input type="number" id="weight"><br><br>
+
+  Rate per KG MMK: <input type="number" id="rateMMK"><br><br>
+  Rate per KG VND: <input type="number" id="rateVND"><br><br>
+
+  <button type="submit">Generate Invoice</button>
+</form>
+
+<script>
+document.getElementById("shipmentForm").onsubmit = async function(e) {
+  e.preventDefault();
+
+  const tracking = "NXS-" + Date.now();
+  const invoice = "INV-" + new Date().getFullYear() + "-" + Math.floor(Math.random()*1000);
+
+  const weightVal = +weight.value;
+  const totalMMK = +itemMMK.value + (weightVal * +rateMMK.value);
+  const totalVND = +itemVND.value + (weightVal * +rateVND.value);
+
+  const payload = {
+    tracking_no: tracking,
+    invoice_no: invoice,
+    customer_name: customer.value,
+    phone: phone.value,
+    route: route.value,
+    flight_date: flight.value,
+    item_desc: item.value,
+    item_fee_mmk: itemMMK.value,
+    item_fee_vnd: itemVND.value,
+    weight_kg: weightVal,
+    rate_mmk: rateMMK.value,
+    rate_vnd: rateVND.value,
+    total_mmk: totalMMK,
+    total_vnd: totalVND,
+    status: "Received",
+    remarks: ""
+  };
+
+  await fetch("https://script.google.com/macros/s/AKfycbzQhaxtJqpqAFlOMfzL3gJ8so04Q5ZHVuhQupFzU2nAra5217L4iCc6HKi8JhfcFJn9/exec", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+
+  window.open(`invoice.html?tracking=${tracking}&invoice=${invoice}&mmk=${totalMMK}&vnd=${totalVND}`);
+};
+</script>
+
+</body>
+</html>
