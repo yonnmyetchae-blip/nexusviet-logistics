@@ -2,27 +2,15 @@
 <html>
 <head>
   <title>Track Shipment – Nexus Viet Air Cargo</title>
-
   <style>
-    #timeline {
-      list-style: none;
-      padding-left: 0;
-    }
-    #timeline li {
-      color: #aaa;
-      padding: 4px 0;
-    }
-    #timeline li.active {
-      color: green;
-      font-weight: bold;
-    }
+    #timeline li { color:#aaa }
+    #timeline li.active { color:green; font-weight:bold }
   </style>
 </head>
 <body>
 
 <h1>Shipment Tracking</h1>
 
-<h3>Status</h3>
 <ul id="timeline">
   <li id="received">Received</li>
   <li id="intransit">In Transit</li>
@@ -30,53 +18,36 @@
   <li id="delivered">Delivered</li>
 </ul>
 
-<div id="details">Loading...</div>
+<div id="result">Loading…</div>
 
 <script>
-const API_URL = "PASTE_PERSONAL_GMAIL_WEB_APP_URL_HERE";
-const params = new URLSearchParams(window.location.search);
-const tracking = params.get("tracking");
+const API_URL = "https://script.google.com/macros/s/AKfycbwoyNzupluztEPyAKdm7jhu8RA-VZkBZ-dBb9Iyu6gDK0oEn_6DMrJgg5SQ6_GA_0wk/exec";
+const tracking = new URLSearchParams(location.search).get("tracking");
 
-if (!tracking) {
-  document.getElementById("details").innerText = "Tracking number missing.";
-} else {
-  fetch(API_URL + "?tracking=" + tracking)
-    .then(res => res.json())
-    .then(data => {
-      document.getElementById("details").innerHTML = `
-        <p><strong>Tracking No:</strong> ${data.tracking_no}</p>
-        <p><strong>Route:</strong> ${data.route}</p>
-        <p><strong>Flight Date:</strong> ${data.flight_date}</p>
+fetch(API_URL + "?tracking=" + tracking)
+  .then(r => r.json())
+  .then(d => {
+    document.getElementById("result").innerHTML = `
+      <p><b>Route:</b> ${d.route}</p>
+      <p><b>Receiver:</b> ${d.receiver_name}</p>
+      <p><b>Address:</b> ${d.receiver_address}</p>
+      <p><b>Items:</b> ${d.item_qty}</p>
+      <p><b>Total:</b> ${d.total_mmk} MMK / ${d.total_vnd} VND</p>
+    `;
 
-        <h3>Receiver</h3>
-        <p>${data.receiver_name}</p>
-        <p>${data.receiver_address}</p>
-
-        <h3>Goods</h3>
-        <p>${data.item_desc}</p>
-        <p>Weight: ${data.weight_kg} KG</p>
-
-        <h3>Charges</h3>
-        <p>Handling Fee: ${data.handling_fee_mmk} MMK / ${data.handling_fee_vnd} VND</p>
-        <p>Total: ${data.total_mmk} MMK / ${data.total_vnd} VND</p>
-      `;
-
-      const statusMap = {
-        "Received": "received",
-        "In Transit": "intransit",
-        "Arrived": "arrived",
-        "Delivered": "delivered"
-      };
-
-      if (data.status && statusMap[data.status]) {
-        const el = document.getElementById(statusMap[data.status]);
-        if (el) el.classList.add("active");
-      }
-    })
-    .catch(() => {
-      document.getElementById("details").innerText = "Tracking not found.";
-    });
-}
+    const map = {
+      "Received":"received",
+      "In Transit":"intransit",
+      "Arrived":"arrived",
+      "Delivered":"delivered"
+    };
+    if (map[d.status]) {
+      document.getElementById(map[d.status]).classList.add("active");
+    }
+  })
+  .catch(() => {
+    document.getElementById("result").innerText = "Tracking not found";
+  });
 </script>
 
 </body>
