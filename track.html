@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Track Shipment</title>
+</head>
+<body>
+
+<h2>Shipment Tracking</h2>
+
+<div id="result">Loading...</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const tracking = params.get("tracking");
+
+if (!tracking) {
+  document.getElementById("result").innerText = "Tracking number not found.";
+} else {
+  fetch("https://script.google.com/macros/s/AKfycbzQhaxtJqpqAFlOMfzL3gJ8so04Q5ZHVuhQupFzU2nAra5217L4iCc6HKi8JhfcFJn9/exec?tracking=" + tracking)
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("result").innerHTML = `
+        <p><b>Tracking No:</b> ${data.tracking_no}</p>
+        <p><b>Status:</b> ${data.status}</p>
+        <p><b>Route:</b> ${data.route}</p>
+        <p><b>Flight Date:</b> ${data.flight_date}</p>
+
+        <h3>Goods</h3>
+        <p>${data.item_desc}</p>
+        <p><b>Weight:</b> ${data.weight_kg} KG</p>
+
+        <h3>Pricing</h3>
+        <p>Item Fee: ${data.item_fee_mmk} MMK / ${data.item_fee_vnd} VND</p>
+        <p>Rate: ${data.rate_mmk} MMK / ${data.rate_vnd} VND per KG</p>
+        <p><b>Total:</b> ${data.total_mmk} MMK / ${data.total_vnd} VND</p>
+      `;
+    })
+    .catch(() => {
+      document.getElementById("result").innerText = "Tracking not found.";
+    });
+}
+</script>
+
+</body>
+</html>
