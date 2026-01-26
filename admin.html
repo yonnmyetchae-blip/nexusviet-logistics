@@ -2,97 +2,139 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Nexus Viet Air Cargo – Invoice</title>
+  <title>Nexus Viet Air Cargo – Admin</title>
+
   <style>
-    body { font-family: Arial; max-width: 800px; margin: auto; }
-    h1 { margin-bottom: 5px; }
-    .company { margin-bottom: 20px; }
-    .section { margin-top: 15px; }
-    .label { font-weight: bold; }
-    button { padding: 8px 14px; margin-top: 20px; }
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: auto;
+    }
+    label {
+      font-weight: bold;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 6px;
+      margin-bottom: 12px;
+    }
+    button {
+      padding: 10px 16px;
+      font-size: 16px;
+    }
   </style>
 </head>
 
 <body>
 
-<h1>Nexus Viet Air Cargo</h1>
+<h2>Create Shipment – Nexus Viet Air Cargo</h2>
 
-<div class="company">
-  Phone: +95 9444 679 446<br>
-  Email: info@nexusgroupmyanmar.com<br>
-  Address: No 9, 3A, MyintMo Street, Sanchaung, Yangon, Myanmar
-</div>
+<form id="shipmentForm">
 
-<hr>
+<label>Sender Name</label>
+<input id="sender_name" required>
 
-<div class="section">
-  <span class="label">Invoice No:</span> <span id="invoice"></span><br>
-  <span class="label">Tracking No:</span> <span id="tracking"></span><br>
-  <span class="label">Status:</span> <span id="status"></span>
-</div>
+<label>Sender Phone</label>
+<input id="sender_phone">
 
-<hr>
+<label>Receiver Name</label>
+<input id="receiver_name" required>
 
-<div class="section">
-  <h3>Sender</h3>
-  Name: <span id="sender_name"></span><br>
-  Phone: <span id="sender_phone"></span>
-</div>
+<label>Receiver Phone</label>
+<input id="receiver_phone">
 
-<div class="section">
-  <h3>Receiver</h3>
-  Name: <span id="receiver_name"></span><br>
-  Phone: <span id="receiver_phone"></span><br>
-  Address: <span id="receiver_address"></span>
-</div>
+<label>Receiver Address</label>
+<textarea id="receiver_address"></textarea>
 
-<hr>
+<label>Route </label>
+<select id="Route">
+  <option>YGN - HCM</option>
+  <option>YGN - Hanoi</option>
+  <option>YGN - DaNang</option>
+  <option>HCM - YGN</option>
+  <option>Hanoi - YGN</option>
+  <option>DaNang - YGN</option>
+</select>
 
-<div class="section">
-  Route: <span id="route"></span><br>
-  Flight Date: <span id="flight_date"></span><br>
-  Item: <span id="item_desc"></span><br>
-  Quantity: <span id="quantity"></span><br>
-  Weight (KG): <span id="weight"></span>
-</div>
+<label>Flight Date</label>
+<input type="date" id="flight_date">
 
-<hr>
+<label>Item Description</label>
+<input id="item_desc">
 
-<div class="section">
-  Handling Fee (MMK): <span id="handling"></span><br>
-  Total MMK: <strong><span id="total_mmk"></span></strong>
-</div>
+<label>Quantity (Packages)</label>
+<input type="number" id="quantity" value="0">
 
-<button onclick="window.print()">Print Invoice</button>
+<label>Handling Fee per Package (MMK)</label>
+<input type="number" id="handling_fee" value="0">
+
+<label>Weight (KG)</label>
+<input type="number" id="weight_kg" value="0">
+
+<label>Rate per KG (MMK)</label>
+<input type="number" id="rate_per_kg" value="0">
+
+<label>Status</label>
+<select id="status">
+  <option>Received</option>
+  <option>In Transit</option>
+  <option>Arrived</option>
+  <option>Delivered</option>
+</select>
+
+<button type="submit">Generate Invoice</button>
+
+</form>
 
 <script>
-const params = new URLSearchParams(window.location.search);
-const tracking = params.get("tracking");
+document.getElementById("shipmentForm").onsubmit = async function(e) {
+  e.preventDefault();
 
-document.getElementById("tracking").innerText = tracking;
+  const tracking = "NXS-" + Date.now();
+  const invoice = "INV-" + new Date().getFullYear() + "-" + Math.floor(Math.random() * 1000);
 
-fetch("https://script.google.com/macros/s/AKfycbwoyNzupluztEPyAKdm7jhu8RA-VZkBZ-dBb9Iyu6gDK0oEn_6DMrJgg5SQ6_GA_0wk/exec=" + tracking)
-  .then(res => res.json())
-  .then(data => {
-    document.getElementById("invoice").innerText = data.invoice_no;
-    document.getElementById("status").innerText = data.status;
+  const quantity = Number(quantity.value);
+  const handlingFee = Number(handling_fee.value);
+  const weight = Number(weight_kg.value);
+  const rate = Number(rate_per_kg.value);
 
-    document.getElementById("sender_name").innerText = data.sender_name;
-    document.getElementById("sender_phone").innerText = data.sender_phone;
+  const totalMMK = (quantity * handlingFee) + (weight * rate);
 
-    document.getElementById("receiver_name").innerText = data.receiver_name;
-    document.getElementById("receiver_phone").innerText = data.receiver_phone;
-    document.getElementById("receiver_address").innerText = data.receiver_address;
+  const payload = {
+    tracking_no: tracking,
+    invoice_no: invoice,
 
-    document.getElementById("route").innerText = data.route;
-    document.getElementById("flight_date").innerText = data.flight_date;
-    document.getElementById("item_desc").innerText = data.item_desc;
-    document.getElementById("quantity").innerText = data.quantity;
-    document.getElementById("weight").innerText = data.weight_kg;
+    sender_name: sender_name.value,
+    sender_phone: sender_phone.value,
 
-    document.getElementById("handling").innerText = data.handling_fee_mmk;
-    document.getElementById("total_mmk").innerText = data.total_mmk;
-  });
+    receiver_name: receiver_name.value,
+    receiver_phone: receiver_phone.value,
+    receiver_address: receiver_address.value,
+
+    route: route.value || "",
+    flight_date: flight_date.value,
+
+    item_desc: item_desc.value,
+    quantity: quantity,
+    handling_fee_mmk: quantity * handlingFee,
+    weight_kg: weight,
+    rate_per_kg_mmk: rate,
+    subtotal_mmk: totalMMK,
+    total_mmk: totalMMK,
+
+    status: status.value
+  };
+
+  await fetch(
+    "https://script.google.com/macros/s/AKfycbwoyNzupluztEPyAKdm7jhu8RA-VZkBZ-dBb9Iyu6gDK0oEn_6DMrJgg5SQ6_GA_0wk/exec",
+    {
+      method: "POST",
+      body: JSON.stringify(payload)
+    }
+  );
+
+  window.open("invoice.html?tracking=" + tracking);
+};
 </script>
 
 </body>
