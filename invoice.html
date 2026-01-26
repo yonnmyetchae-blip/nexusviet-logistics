@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Invoice</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+</head>
+<body>
+
+<h2>Nexus Logistics</h2>
+
+<p>Invoice No: <span id="inv"></span></p>
+<p>Tracking No: <span id="trk"></span></p>
+
+<p>Total MMK: <b id="mmk"></b></p>
+<p>Total VND: <b id="vnd"></b></p>
+
+<div id="qrcode"></div>
+
+<script>
+const params = new URLSearchParams(location.search);
+const tracking = params.get("tracking");
+
+document.getElementById("inv").innerText = params.get("invoice");
+document.getElementById("trk").innerText = tracking;
+document.getElementById("mmk").innerText = params.get("mmk");
+document.getElementById("vnd").innerText = params.get("vnd");
+
+new QRCode(document.getElementById("qrcode"), {
+  text: `track.html?tracking=${tracking}`,
+  width: 150,
+  height: 150
+});
+</script>
+
+</body>
+</html>
