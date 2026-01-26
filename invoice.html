@@ -8,17 +8,17 @@
 
 <h1>Nexus Viet Air Cargo</h1>
 
-<p><strong>Invoice No:</strong> <span id="invoice"></span></p>
-<p><strong>Tracking No:</strong> <span id="tracking"></span></p>
+<p><b>Invoice No:</b> <span id="invoice"></span></p>
+<p><b>Tracking No:</b> <span id="tracking"></span></p>
 
 <div id="qrcode"></div>
 
-<button onclick="window.print()">Download PDF</button>
+<button onclick="window.print()">Download / Print PDF</button>
 
 <script>
-const params = new URLSearchParams(window.location.search);
-const tracking = params.get("tracking");
-const invoice = params.get("invoice");
+const p = new URLSearchParams(location.search);
+const tracking = p.get("tracking");
+const invoice = p.get("invoice");
 
 document.getElementById("tracking").innerText = tracking;
 document.getElementById("invoice").innerText = invoice;
@@ -32,9 +32,7 @@ new QRCode(document.getElementById("qrcode"), {
 
 <style>
 @media print {
-  button {
-    display: none;
-  }
+  button { display: none; }
 }
 </style>
 
