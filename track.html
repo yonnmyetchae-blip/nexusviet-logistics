@@ -1,11 +1,37 @@
 <!DOCTYPE html>
 <html>
+<style>
+#timeline {
+  list-style: none;
+  padding-left: 0;
+}
+
+#timeline li {
+  padding: 6px 0;
+  color: #999;
+}
+
+#timeline li.active {
+  color: #0a7d32;
+  font-weight: bold;
+}
+</style>
+  
 <head>
   <title>Track Shipment</title>
 </head>
 <body>
 
 <h2>Shipment Tracking</h2>
+  <h3>Shipment Status</h3>
+
+<ul id="timeline">
+  <li id="received">Received</li>
+  <li id="intransit">In Transit</li>
+  <li id="arrived">Arrived</li>
+  <li id="delivered">Delivered</li>
+</ul>
+
 
 <div id="result">Loading...</div>
 
@@ -21,7 +47,17 @@ if (!tracking) {
     .then(data => {
       document.getElementById("result").innerHTML = `
         <p><b>Tracking No:</b> ${data.tracking_no}</p>
-        <p><b>Status:</b> ${data.status}</p>
+        <p><b>Status:</b> ${data.status}</p>const statusMap = {
+  "Received": "received",
+  "In Transit": "intransit",
+  "Arrived": "arrived",
+  "Delivered": "delivered"
+};
+
+const activeId = statusMap[status];
+if (activeId) {
+  document.getElementById(activeId).classList.add("active");
+}
         <p><b>Route:</b> ${data.route}</p>
         <p><b>Flight Date:</b> ${data.flight_date}</p>
 
