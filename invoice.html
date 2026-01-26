@@ -1,34 +1,195 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Invoice</title>
+  <meta charset="UTF-8">
+  <title>Invoice – Nexus Viet Air Cargo</title>
+
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    h1, h2 {
+      margin-bottom: 5px;
+    }
+
+    hr {
+      margin: 20px 0;
+    }
+
+    .section {
+      margin-bottom: 15px;
+    }
+
+    .label {
+      font-weight: bold;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+
+    th, td {
+      padding: 8px;
+      text-align: left;
+    }
+
+    .total {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 14px;
+    }
+
+    @media print {
+      button {
+        display: none;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<h2>Nexus Viet Air Cargo</h2>
+<h1>Nexus Viet Air Cargo</h1>
+<p>Air Cargo & Hand Carry Service</p>
 
-<p>Invoice No: <span id="inv"></span></p>
-<p>Tracking No: <span id="trk"></span></p>
+<hr>
 
-<p>Total MMK: <b id="mmk"></b></p>
-<p>Total VND: <b id="vnd"></b></p>
+<div class="section">
+  <p><span class="label">Invoice No:</span> <span id="invoice_no"></span></p>
+  <p><span class="label">Tracking No:</span> <span id="tracking_no"></span></p>
+  <p><span class="label">Route:</span> <span id="route"></span></p>
+  <p><span class="label">Flight Date:</span> <span id="flight_date"></span></p>
+  <p><span class="label">Status:</span> <span id="status"></span></p>
+</div>
 
-<div id="qrcode"></div>
+<hr>
+
+<div class="section">
+  <h3>Sender</h3>
+  <p><span class="label">Name:</span> <span id="sender_name"></span></p>
+  <p><span class="label">Phone:</span> <span id="sender_phone"></span></p>
+</div>
+
+<div class="section">
+  <h3>Receiver</h3>
+  <p><span class="label">Name:</span> <span id="receiver_name"></span></p>
+  <p><span class="label">Phone:</span> <span id="receiver_phone"></span></p>
+  <p><span class="label">Address:</span> <span id="receiver_address"></span></p>
+</div>
+
+<hr>
+
+<div class="section">
+  <h3>Shipment Details</h3>
+  <p><span class="label">Item Description:</span> <span id="item_desc"></span></p>
+  <p><span class="label">Weight:</span> <span id="weight_kg"></span> KG</p>
+</div>
+
+<hr>
+
+<div class="section">
+  <h3>Charges</h3>
+
+  <table>
+    <tr>
+      <th>Description</th>
+      <th>MMK</th>
+      <th>VND</th>
+    </tr>
+    <tr>
+      <td>Handling Fee (per package)</td>
+      <td id="handling_fee_mmk"></td>
+      <td id="handling_fee_vnd"></td>
+    </tr>
+    <tr>
+      <td>Weight Charge</td>
+      <td id="weight_charge_mmk"></td>
+      <td id="weight_charge_vnd"></td>
+    </tr>
+    <tr>
+      <td class="total">Total</td>
+      <td class="total" id="total_mmk"></td>
+      <td class="total" id="total_vnd"></td>
+    </tr>
+  </table>
+</div>
+
+<hr>
+
+<div class="section">
+  <h3>Track Shipment</h3>
+  <div id="qrcode"></div>
+</div>
+
+<button onclick="window.print()">Download / Print Invoice</button>
 
 <script>
-const params = new URLSearchParams(location.search);
+const params = new URLSearchParams(window.location.search);
 const tracking = params.get("tracking");
+const invoice = params.get("invoice");
 
-document.getElementById("inv").innerText = params.get("invoice");
-document.getElementById("trk").innerText = tracking;
-document.getElementById("mmk").innerText = params.get("mmk");
-document.getElementById("vnd").innerText = params.get("vnd");
+document.getElementById("tracking_no").innerText = tracking;
+document.getElementById("invoice_no").innerText = invoice;
 
-new QRCode(document.getElementById("qrcode"), {
-  text: `https://track.nexusgroupmyanmar.com/track.html?tracking=${tracking}`,
-  width: 150,
-  height: 150
+// FETCH DATA FROM API
+fetch(
+  "https://script.google.com/macros/s/AKfycbwoyNzupluztEPyAKdm7jhu8RA-VZkBZ-dBb9Iyu6gDK0oEn_6DMrJgg5SQ6_GA_0wk/exec?tracking=" + tracking
+)
+.then(res => res.json())
+.then(data => {
+
+  document.getElementById("route").innerText = data.route;
+  document.getElementById("flight_date").innerText = data.flight_date;
+  document.getElementById("status").innerText = data.status;
+
+  document.getElementById("sender_name").innerText = data.sender_name;
+  document.getElementById("sender_phone").innerText = data.sender_phone;
+
+  document.getElementById("receiver_name").innerText = data.receiver_name;
+  document.getElementById("receiver_phone").innerText = data.receiver_phone;
+  document.getElementById("receiver_address").innerText = data.receiver_address;
+
+  document.getElementById("item_desc").innerText = data.item_desc;
+  document.getElementById("weight_kg").innerText = data.weight_kg;
+
+  document.getElementById("handling_fee_mmk").innerText = data.handling_fee_mmk;
+  document.getElementById("handling_fee_vnd").innerText = data.handling_fee_vnd;
+
+  const weightChargeMMK = data.weight_kg * data.rate_mmk;
+  const weightChargeVND = data.weight_kg * data.rate_vnd;
+
+  document.getElementById("weight_charge_mmk").innerText = weightChargeMMK;
+  document.getElementById("weight_charge_vnd").innerText = weightChargeVND;
+
+  document.getElementById("total_mmk").innerText = data.total_mmk;
+  document.getElementById("total_vnd").innerText = data.total_vnd;
+
+  new QRCode(document.getElementById("qrcode"), {
+    text: `https://track.nexusgroupmyanmar.com/track.html?tracking=${tracking}`,
+    width: 150,
+    height: 150
+  });
+
+})
+.catch(() => {
+  alert("Unable to load shipment data.");
 });
 </script>
 
