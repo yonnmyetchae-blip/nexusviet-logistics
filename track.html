@@ -16,7 +16,7 @@ const tracking = params.get("tracking");
 if (!tracking) {
   document.getElementById("result").innerText = "Tracking number not found.";
 } else {
-  fetch("https://script.google.com/macros/s/AKfycbzQhaxtJqpqAFlOMfzL3gJ8so04Q5ZHVuhQupFzU2nAra5217L4iCc6HKi8JhfcFJn9/exec?tracking=" + tracking)
+  fetch("https://script.google.com/macros/s/AKfycbwoyNzupluztEPyAKdm7jhu8RA-VZkBZ-dBb9Iyu6gDK0oEn_6DMrJgg5SQ6_GA_0wk/exec?tracking=" + tracking)
     .then(res => res.json())
     .then(data => {
       document.getElementById("result").innerHTML = `
