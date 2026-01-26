@@ -1,53 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Track Shipment – Nexus Viet Air Cargo</title>
-  <style>
-    #timeline li { color:#aaa }
-    #timeline li.active { color:green; font-weight:bold }
-  </style>
+  <title>Track Shipment</title>
 </head>
 <body>
 
-<h1>Shipment Tracking</h1>
+<h2>Shipment Tracking</h2>
 
-<ul id="timeline">
-  <li id="received">Received</li>
-  <li id="intransit">In Transit</li>
-  <li id="arrived">Arrived</li>
-  <li id="delivered">Delivered</li>
-</ul>
-
-<div id="result">Loading…</div>
+<div id="result">Loading...</div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwoyNzupluztEPyAKdm7jhu8RA-VZkBZ-dBb9Iyu6gDK0oEn_6DMrJgg5SQ6_GA_0wk/exec";
-const tracking = new URLSearchParams(location.search).get("tracking");
+const params = new URLSearchParams(window.location.search);
+const tracking = params.get("tracking");
 
-fetch(API_URL + "?tracking=" + tracking)
-  .then(r => r.json())
-  .then(d => {
-    document.getElementById("result").innerHTML = `
-      <p><b>Route:</b> ${d.route}</p>
-      <p><b>Receiver:</b> ${d.receiver_name}</p>
-      <p><b>Address:</b> ${d.receiver_address}</p>
-      <p><b>Items:</b> ${d.item_qty}</p>
-      <p><b>Total:</b> ${d.total_mmk} MMK / ${d.total_vnd} VND</p>
-    `;
+if (!tracking) {
+  document.getElementById("result").innerText = "Tracking number not found.";
+} else {
+  fetch("PASTE_YOUR_WEB_APP_URL_HERE?tracking=" + tracking)
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("result").innerHTML = `
+        <p><b>Tracking No:</b> ${data.tracking_no}</p>
+        <p><b>Status:</b> ${data.status}</p>
+        <p><b>Route:</b> ${data.route}</p>
+        <p><b>Flight Date:</b> ${data.flight_date}</p>
 
-    const map = {
-      "Received":"received",
-      "In Transit":"intransit",
-      "Arrived":"arrived",
-      "Delivered":"delivered"
-    };
-    if (map[d.status]) {
-      document.getElementById(map[d.status]).classList.add("active");
-    }
-  })
-  .catch(() => {
-    document.getElementById("result").innerText = "Tracking not found";
-  });
+        <h3>Goods</h3>
+        <p>${data.item_desc}</p>
+        <p><b>Weight:</b> ${data.weight_kg} KG</p>
+
+        <h3>Pricing</h3>
+        <p>Item Fee: ${data.item_fee_mmk} MMK / ${data.item_fee_vnd} VND</p>
+        <p>Rate: ${data.rate_mmk} MMK / ${data.rate_vnd} VND per KG</p>
+        <p><b>Total:</b> ${data.total_mmk} MMK / ${data.total_vnd} VND</p>
+      `;
+    })
+    .catch(() => {
+      document.getElementById("result").innerText = "Tracking not found.";
+    });
+}
 </script>
 
 </body>
