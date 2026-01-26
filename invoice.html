@@ -1,66 +1,36 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Invoice – Nexus Viet Air Cargo</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <title>Invoice</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
 </head>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<body>
 
-<script>
-const params = new URLSearchParams(window.location.search);
+<h2>Nexus Logistics</h2>
 
-const tracking = params.get("tracking");
-const invoice = params.get("invoice");
+<p>Invoice No: <span id="inv"></span></p>
+<p>Tracking No: <span id="trk"></span></p>
 
-// Show text
-if (tracking) {
-  document.getElementById("trackingNo").innerText = tracking;
-}
-if (invoice) {
-  document.getElementById("invoiceNo").innerText = invoice;
-}
-
-// Generate QR
-if (tracking && typeof QRCode !== "undefined") {
-  new QRCode(document.getElementById("qrcode"), {
-    text: `https://track.nexusgroupmyanmar.com/track.html?tracking=${tracking}`,
-    width: 160,
-    height: 160
-  });
-}
-</script>
-
-  <body>
-
-<h1>Nexus Viet Air Cargo</h1>
-
-<p><b>Invoice No:</b> <span id="invoice"></span></p>
-<p><b>Tracking No:</b> <span id="tracking"></span></p>
+<p>Total MMK: <b id="mmk"></b></p>
+<p>Total VND: <b id="vnd"></b></p>
 
 <div id="qrcode"></div>
 
-<button onclick="window.print()">Download / Print PDF</button>
-
 <script>
-const p = new URLSearchParams(location.search);
-const tracking = p.get("tracking");
-const invoice = p.get("invoice");
+const params = new URLSearchParams(location.search);
+const tracking = params.get("tracking");
 
-document.getElementById("tracking").innerText = tracking;
-document.getElementById("invoice").innerText = invoice;
+document.getElementById("inv").innerText = params.get("invoice");
+document.getElementById("trk").innerText = tracking;
+document.getElementById("mmk").innerText = params.get("mmk");
+document.getElementById("vnd").innerText = params.get("vnd");
 
 new QRCode(document.getElementById("qrcode"), {
-  text: `https://track.nexusgroupmyanmar.com/track.html?tracking=${tracking}`,
-  width: 160,
-  height: 160
+  text: `track.html?tracking=${tracking}`,
+  width: 150,
+  height: 150
 });
 </script>
-
-<style>
-@media print {
-  button { display: none; }
-}
-</style>
 
 </body>
 </html>
