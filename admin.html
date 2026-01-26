@@ -18,24 +18,24 @@
 
 <h3>Shipment</h3>
 <select id="route">
-  <option>YGN – HCM</option>
-  <option>YGN – Hanoi</option>
-  <option>YGN – DaNang</option>
-  <option>HCM – YGN</option>
-  <option>Hanoi – YGN</option>
-  <option>DaNang – YGN</option>
+  <option>YGN - HCM</option>
+  <option>YGN - Hanoi</option>
+  <option>YGN - DaNang</option>
+  <option>HCM - YGN</option>
+  <option>Hanoi - YGN</option>
+  <option>Da Nang - YGN</option>
 </select><br>
 
 <input type="date" id="flight_date"><br>
 <input id="item_desc" placeholder="Item Description"><br>
 
 <h3>Fees</h3>
-<input type="number" id="handling_fee_mmk" placeholder="Handling Fee MMK"><br>
-<input type="number" id="handling_fee_vnd" placeholder="Handling Fee VND"><br>
-
+<input type="number" id="item_qty" placeholder="Item Quantity" value="1"><br>
+<input type="number" id="handling_fee_mmk" placeholder="Handling Fee MMK (per item)"><br>
+<input type="number" id="handling_fee_vnd" placeholder="Handling Fee VND (per item)"><br>
 <input type="number" id="weight_kg" placeholder="Weight (KG)"><br>
-<input type="number" id="rate_mmk" placeholder="Rate per KG (MMK)"><br>
-<input type="number" id="rate_vnd" placeholder="Rate per KG (VND)"><br>
+<input type="number" id="rate_mmk" placeholder="Rate per KG MMK"><br>
+<input type="number" id="rate_vnd" placeholder="Rate per KG VND"><br>
 
 <h3>Status</h3>
 <select id="status">
@@ -48,13 +48,53 @@
 <button onclick="submitShipment()">Generate Invoice</button>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwoyNzupluztEPyAKdm7jhu8RA-VZkBZ-dBb9Iyu6gDK0oEn_6DMrJgg5SQ6_GA_0wk/exec
-";
+const API_URL = "https://script.google.com/macros/library/d/1raoqmSjafnU6Q27ui_0ZGhYpsfuT9mvpbljWi6-aHc4RqAsoAX806v4H/1";
 
 function submitShipment() {
   const tracking = "NXS-" + Date.now();
   const invoice = "INV-" + Date.now();
 
-  const handlingMMK = Number(handling_fee_mmk.value || 0);
-  const handlingVND = Number(handling_fee_vnd.value || 0);
-  const weight
+  const qty = Number(item_qty.value || 1);
+  const hMMK = Number(handling_fee_mmk.value || 0);
+  const hVND = Number(handling_fee_vnd.value || 0);
+  const w = Number(weight_kg.value || 0);
+  const rMMK = Number(rate_mmk.value || 0);
+  const rVND = Number(rate_vnd.value || 0);
+
+  const payload = {
+    tracking_no: tracking,
+    invoice_no: invoice,
+    sender_name: sender_name.value,
+    sender_phone: sender_phone.value,
+    receiver_name: receiver_name.value,
+    receiver_phone: receiver_phone.value,
+    receiver_address: receiver_address.value,
+    route: route.value,
+    flight_date: flight_date.value,
+    item_desc: item_desc.value,
+    item_qty: qty,
+    handling_fee_mmk: hMMK,
+    handling_fee_vnd: hVND,
+    weight_kg: w,
+    rate_mmk: rMMK,
+    rate_vnd: rVND,
+    total_mmk: (hMMK * qty) + (w * rMMK),
+    total_vnd: (hVND * qty) + (w * rVND),
+    status: status.value,
+    remarks: ""
+  };
+
+  fetch(API_URL, {
+    method: "POST",
+    body: JSON.stringify(payload)
+  }).then(() => {
+    window.open(
+      `invoice.html?tracking=${tracking}&invoice=${invoice}`,
+      "_blank"
+    );
+  });
+}
+</script>
+
+</body>
+</html>
