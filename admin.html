@@ -96,14 +96,13 @@ function submitShipment() {
     status: document.getElementById("status").value
   };
 
-  fetch(API_URL, {
-  method: "POST",
-  body: JSON.stringify(data)
+  await fetch("https://script.google.com/macros/s/AKfycbwoyNzupluztEPyAKdm7jhu8RA-VZkBZ-dBb9Iyu6gDK0oEn_6DMrJgg5SQ6_GA_0wk/exec", {
+method: "POST",
+body: JSON.stringify(payload)
 });
 
-window.location.href =
-  "invoice.html?tracking=" + tracking;
-}
+window.open(`invoice.html?tracking=${tracking}&invoice=${invoice}&mmk=${totalMMK}&vnd=${totalVND}`);
+};
 </script>
 
 </body>
