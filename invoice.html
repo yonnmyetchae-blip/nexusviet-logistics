@@ -4,7 +4,33 @@
   <title>Invoice – Nexus Viet Air Cargo</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
-<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+
+const tracking = params.get("tracking");
+const invoice = params.get("invoice");
+
+// Show text
+if (tracking) {
+  document.getElementById("trackingNo").innerText = tracking;
+}
+if (invoice) {
+  document.getElementById("invoiceNo").innerText = invoice;
+}
+
+// Generate QR
+if (tracking && typeof QRCode !== "undefined") {
+  new QRCode(document.getElementById("qrcode"), {
+    text: `https://track.nexusgroupmyanmar.com/track.html?tracking=${tracking}`,
+    width: 160,
+    height: 160
+  });
+}
+</script>
+
+  <body>
 
 <h1>Nexus Viet Air Cargo</h1>
 
