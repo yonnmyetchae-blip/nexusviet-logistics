@@ -18,8 +18,12 @@
 
 <h3>Shipment</h3>
 <select id="route">
-  <option>YGN – DN</option>
-  <option>DN – YGN</option>
+  <option>YGN – HCM</option>
+  <option>YGN – Hanoi</option>
+  <option>YGN – DaNang</option>
+  <option>HCM – YGN</option>
+  <option>Hanoi – YGN</option>
+  <option>DaNang – YGN</option>
 </select><br>
 
 <input type="date" id="flight_date"><br>
@@ -44,7 +48,8 @@
 <button onclick="submitShipment()">Generate Invoice</button>
 
 <script>
-const API_URL = "PASTE_PERSONAL_GMAIL_WEB_APP_URL_HERE";
+const API_URL = "https://script.google.com/macros/s/AKfycbwoyNzupluztEPyAKdm7jhu8RA-VZkBZ-dBb9Iyu6gDK0oEn_6DMrJgg5SQ6_GA_0wk/exec
+";
 
 function submitShipment() {
   const tracking = "NXS-" + Date.now();
