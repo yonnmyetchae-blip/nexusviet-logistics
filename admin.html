@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Nexus Viet Air Cargo – Admin</title>
+<meta charset="UTF-8">
+<title>Nexus Viet Air Cargo – Admin</title>
 
-  <style>
-    body { font-family: Arial, sans-serif; max-width: 900px; margin: auto; }
-    label { font-weight: bold; }
-    input, textarea, select { width: 100%; padding: 6px; margin-bottom: 12px; }
-    button { padding: 10px 16px; font-size: 16px; }
-  </style>
+<style>
+body { font-family: Arial, sans-serif; max-width: 900px; margin: auto; }
+label { font-weight: bold; display: block; margin-top: 10px; }
+input, textarea, select { width: 100%; padding: 6px; margin-top: 4px; }
+button { padding: 10px 16px; font-size: 16px; margin-top: 20px; }
+</style>
 </head>
 
 <body>
@@ -33,7 +33,7 @@
 <label>Receiver Address</label>
 <textarea id="receiver_address"></textarea>
 
-<label>Route</label>
+<label>Route (optional)</label>
 <select id="route">
   <option value="">-- Select Route --</option>
   <option>YGN - HCM</option>
@@ -86,7 +86,9 @@ document.getElementById("shipmentForm").addEventListener("submit", async functio
   const weight = Number(document.getElementById("weight_kg").value || 0);
   const rate = Number(document.getElementById("rate_per_kg").value || 0);
 
-  const totalMMK = (qty * handling) + (weight * rate);
+  const handlingTotal = qty * handling;
+  const weightTotal = weight * rate;
+  const totalMMK = handlingTotal + weightTotal;
 
   const payload = {
     tracking_no: tracking,
@@ -104,7 +106,7 @@ document.getElementById("shipmentForm").addEventListener("submit", async functio
 
     item_desc: item_desc.value,
     quantity: qty,
-    handling_fee_mmk: qty * handling,
+    handling_fee_mmk: handlingTotal,
     weight_kg: weight,
     rate_per_kg_mmk: rate,
     total_mmk: totalMMK,
@@ -112,8 +114,8 @@ document.getElementById("shipmentForm").addEventListener("submit", async functio
     status: status.value
   };
 
-  await fetch("https://script.google.com/macros/s/XXXXX/exec", {
-  method: "POST",
+  await fetch(
+    "https://script.google.com/macros/s/AKfycbwoyNzupluztEPyAKdm7jhu8RA-VZkBZ-dBb9Iyu6gDK0oEn_6DMrJgg5SQ6_GA_0wk/exec",method: "POST",
   body: JSON.stringify(payload)
 });
 
