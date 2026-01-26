@@ -1,136 +1,55 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
   <title>Nexus Viet Air Cargo – Admin</title>
 </head>
 <body>
 
 <h2>Create Shipment</h2>
 
-<form id="shipmentForm">
+<h3>Sender</h3>
+<input id="sender_name" placeholder="Sender Name"><br>
+<input id="sender_phone" placeholder="Sender Phone"><br>
 
-  <h3>Sender Information</h3>
-  Sender Name:<br>
-  <input required id="sender_name"><br><br>
+<h3>Receiver</h3>
+<input id="receiver_name" placeholder="Receiver Name"><br>
+<input id="receiver_phone" placeholder="Receiver Phone"><br>
+<textarea id="receiver_address" placeholder="Receiver Address"></textarea><br>
 
-  Sender Phone:<br>
-  <input id="sender_phone"><br><br>
+<h3>Shipment</h3>
+<select id="route">
+  <option>YGN – DN</option>
+  <option>DN – YGN</option>
+</select><br>
 
-  <h3>Receiver Information</h3>
-  Receiver Name:<br>
-  <input required id="receiver_name"><br><br>
+<input type="date" id="flight_date"><br>
+<input id="item_desc" placeholder="Item Description"><br>
 
-  Receiver Phone:<br>
-  <input id="receiver_phone"><br><br>
+<h3>Fees</h3>
+<input type="number" id="handling_fee_mmk" placeholder="Handling Fee MMK"><br>
+<input type="number" id="handling_fee_vnd" placeholder="Handling Fee VND"><br>
 
-  Receiver Address:<br>
-  <textarea id="receiver_address"></textarea><br><br>
+<input type="number" id="weight_kg" placeholder="Weight (KG)"><br>
+<input type="number" id="rate_mmk" placeholder="Rate per KG (MMK)"><br>
+<input type="number" id="rate_vnd" placeholder="Rate per KG (VND)"><br>
 
-  <h3>Shipment Details</h3>
+<h3>Status</h3>
+<select id="status">
+  <option>Received</option>
+  <option>In Transit</option>
+  <option>Arrived</option>
+  <option>Delivered</option>
+</select><br><br>
 
-  Route:<br>
-  <select id="route">
-    <option>YGN – DaNang</option>
-    <option>DaNang – YGN</option>
-    <option>YGN – HCM</option>
-    <option>HCM – YGN</option>
-    <option>YGN – Hanoi</option>
-    <option>Hanoi – YGN</option>
-  </select><br><br>
-
-  Flight Date:<br>
-  <input type="date" id="flight_date"><br><br>
-
-  Item Description:<br>
-  <input id="item_desc"><br><br>
-
-  <h3>Charges</h3>
-
-  Handling Fee (MMK – per package):<br>
-  <input type="number" id="handling_fee_mmk" value="0"><br><br>
-
-  Handling Fee (VND – per package):<br>
-  <input type="number" id="handling_fee_vnd" value="0"><br><br>
-
-  Weight (KG):<br>
-  <input type="number" id="weight_kg" value="0"><br><br>
-
-  Rate per KG (MMK):<br>
-  <input type="number" id="rate_mmk" value="0"><br><br>
-
-  Rate per KG (VND):<br>
-  <input type="number" id="rate_vnd" value="0"><br><br>
-
-  <br>
-  <button type="submit">Generate Invoice</button>
-
-</form>
+<button onclick="submitShipment()">Generate Invoice</button>
 
 <script>
-document.getElementById("shipmentForm").onsubmit = async function(e) {
-  e.preventDefault();
+const API_URL = "PASTE_PERSONAL_GMAIL_WEB_APP_URL_HERE";
 
+function submitShipment() {
   const tracking = "NXS-" + Date.now();
-  const invoice = "INV-" + new Date().getFullYear() + "-" + Math.floor(Math.random() * 1000);
+  const invoice = "INV-" + Date.now();
 
   const handlingMMK = Number(handling_fee_mmk.value || 0);
   const handlingVND = Number(handling_fee_vnd.value || 0);
-  const weight = Number(weight_kg.value || 0);
-
-  const totalMMK = handlingMMK + (weight * Number(rate_mmk.value || 0));
-  const totalVND = handlingVND + (weight * Number(rate_vnd.value || 0));
-
-  const payload = {
-    tracking_no: tracking,
-    invoice_no: invoice,
-
-    sender_name: sender_name.value,
-    sender_phone: sender_phone.value,
-
-    receiver_name: receiver_name.value,
-    receiver_phone: receiver_phone.value,
-    receiver_address: receiver_address.value,
-
-    route: route.value,
-    flight_date: flight_date.value,
-    item_desc: item_desc.value,
-
-    handling_fee_mmk: handlingMMK,
-    handling_fee_vnd: handlingVND,
-
-    weight_kg: weight,
-    rate_mmk: Number(rate_mmk.value || 0),
-    rate_vnd: Number(rate_vnd.value || 0),
-
-    total_mmk: totalMMK,
-    total_vnd: totalVND,
-
-    <label>Status</label>
-<select id="status">
-  <option value="Received">Received</option>
-  <option value="In Transit">In Transit</option>
-  <option value="Arrived">Arrived</option>
-  <option value="Delivered">Delivered</option>
-</select>
-  
-    remarks: ""
-  };
-
-  await fetch(
-    "https://script.google.com/macros/s/AKfycbwoyNzupluztEPyAKdm7jhu8RA-VZkBZ-dBb9Iyu6gDK0oEn_6DMrJgg5SQ6_GA_0wk/exec",
-    {
-      method: "POST",
-      body: JSON.stringify(payload)
-    }
-  );
-
-  window.open(
-    `invoice.html?tracking=${tracking}&invoice=${invoice}&mmk=${totalMMK}&vnd=${totalVND}`,
-    "_blank"
-  );
-};
-</script>
-
-</body>
-</html>
+  const weight
