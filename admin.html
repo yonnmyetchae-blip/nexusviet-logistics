@@ -1,103 +1,83 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Nexus Viet Air Cargo – Admin</title>
-</head>
-
-<style>
-body { font-family: Arial, sans-serif; max-width: 900px; margin: auto; }
-label { font-weight: bold; display: block; margin-top: 10px; }
-input, textarea, select { width: 100%; padding: 6px; margin-top: 4px; }
-button { padding: 10px 16px; font-size: 16px; margin-top: 20px; }
-</style>
-</head>
-
-<body>
-
-<h2>Create Shipment – Nexus Viet Air Cargo</h2>
-
-<form id="shipmentForm">
-Sender Name: <input required id="Sender_Name"><br><br>
-Sender Phone: <input id="Sender_Phone"><br><br>
-Receiver Name: <input id="Receiver_Name"><br><br>
-Receiver Phone: <input id="Receiver_Phone"><br><br>
-Receiver Address: <input id="Receiver_Address"><br><br>
-
-Route:
-<select id="route">
-<option>YGN – HCM</option>
-<option>YGN – Hanoi</option>
-<option>YGN – DaNang</option>
-<option>HCM – YGN</option>
-<option>Hanoi – YGN</option>
-<option>DaNang – YGN</option>
-</select><br><br>
-
-Flight Date: <input type="date" id="flight"><br><br>
-Item Description: <input id="item"><br><br>
-
-Quantity (Package): <input type="number" id="quantity"><br><br>
-Handling Fee per Package (MMK): <input type="number" id="handling_fee_mmk"><br><br>
-Weight (KG): <input type="number" id="weight"><br><br>
-
-Rate per KG MMK: <input type="number" id="rateMMK"><br><br>
-Rate per KG VND: <input type="number" id="rateVND"><br><br>
-
-Status:
-<select id="Status">
-<option>Received</option>
-<option>In transit</option>
-<option>Arrived</option>
-<option>Delivered</option>
-</select><br><br>
-
-Remarks: <input id="Remarks"><br><br>
-
-<button type="submit">Generate Invoice</button>
-</form>
-
 <script>
 document.getElementById("shipmentForm").onsubmit = async function(e) {
-e.preventDefault();
+    e.preventDefault();
 
-const tracking = "NXS-" + Date.now();
-const invoice = "INV-" + new Date().getFullYear() + "-" + Math.floor(Math.random()*1000);
+    // Read all values safely
+    const senderName     = document.getElementById("Sender_Name").value.trim();
+    const senderPhone    = document.getElementById("Sender_Phone").value.trim();
+    const receiverName   = document.getElementById("Receiver_Name").value.trim();
+    const receiverPhone  = document.getElementById("Receiver_Phone").value.trim();
+    const receiverAddr   = document.getElementById("Receiver_Address").value.trim();
+    const route          = document.getElementById("route").value;
+    const flightDate     = document.getElementById("flight").value;
+    const itemDesc       = document.getElementById("item").value.trim();
+    const quantity       = Number(document.getElementById("quantity").value) || 0;
+    const handlingPerPkg = Number(document.getElementById("handling_fee_mmk").value) || 0;
+    const weightKg       = Number(document.getElementById("weight").value) || 0;
+    const rateMMK        = Number(document.getElementById("rateMMK").value) || 0;
+    const rateVND        = Number(document.getElementById("rateVND").value) || 0;
+    const status         = document.getElementById("Status").value;
+    const remarks        = document.getElementById("Remarks").value.trim();
 
-const qty = Number(document.getElementById("Quantity").value || 0);
-const handling = Number(document.getElementById("Handling_Fee_MMK").value || 0);
+    // Basic validation (optional but recommended)
+    if (!senderName || !receiverName || quantity <= 0 || weightKg <= 0) {
+        alert("Please fill required fields (sender, receiver, quantity, weight)");
+        return;
+    }
 
-const handlingTotal = qty * handling;
-const weightVal = +weight.value;
-const totalMMK = +itemMMK.value + (weightVal * +rateMMK.value);
-const totalVND = +itemVND.value + (weightVal * +rateVND.value);
+    const tracking = "NXS-" + Date.now();
+    const invoice  = "INV-" + new Date().getFullYear() + "-" + String(Math.floor(Math.random() * 10000)).padStart(4, '0');
 
-const payload = {
-tracking_no: tracking,
-invoice_no: invoice,
-sender_name: sendername.value,
-sender_phone: senderphone.value,
-route: route.value,
-flight_date: flightdate.value,
-item_description: item.value,
-quantity: quantity.value,
-handling_fee_mmk: handlingfeeMMK.value,
-weight_kg: weightVal,
-rate_mmk: rateMMK.value,
-rate_vnd: rateVND.value,
-total_mmk: totalMMK,
-total_vnd: totalVND,
-status: Status.value,
-remarks: ""
-};
+    const handlingTotal = quantity * handlingPerPkg;
+    const freightMMK    = weightKg * rateMMK;
+    const freightVND    = weightKg * rateVND;
+    const totalMMK      = handlingTotal + freightMMK;
+    const totalVND      = freightVND;   // adjust logic if you want handling in VND too
 
-await fetch("https://script.google.com/macros/s/AKfycbwoyNzupluztEPyAKdm7jhu8RA-VZkBZ-dBb9Iyu6gDK0oEn_6DMrJgg5SQ6_GA_0wk/exec", {
-method: "POST",
-body: JSON.stringify(payload)
-});
+    const payload = {
+        tracking_no:     tracking,
+        invoice_no:      invoice,
+        sender_name:     senderName,
+        sender_phone:    senderPhone,
+        receiver_name:   receiverName,
+        receiver_phone:  receiverPhone,
+        receiver_address: receiverAddr,
+        route:           route,
+        flight_date:     flightDate,
+        item_desc:       itemDesc,
+        quantity:        quantity,
+        handling_fee_mmk: handlingPerPkg,
+        weight_kg:       weightKg,
+        rate_per_kg_mmk: rateMMK,
+        rate_per_kg_vnd: rateVND,
+        subtotal_mmk:    freightMMK,      // or adjust field names
+        total_mmk:       totalMMK,
+        total_vnd:       totalVND,
+        status:          status,
+        remarks:         remarks
+    };
 
-window.open(`invoice.html?tracking=${tracking}&invoice=${invoice}&mmk=${totalMMK}&vnd=${totalVND}`);
+    try {
+        const response = await fetch(
+            "https://script.google.com/macros/s/AKfycbwoyNzupluztEPyAKdm7jhu8RA-VZkBZ-dBb9Iyu6gDK0oEn_6DMrJgg5SQ6_GA_0wk/exec",
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            }
+        );
+
+        if (!response.ok) throw new Error("Save failed");
+
+        // Open invoice in new tab/window
+        window.open(
+            `invoice.html?tracking=${encodeURIComponent(tracking)}&invoice=${encodeURIComponent(invoice)}&mmk=${totalMMK}&vnd=${totalVND}`,
+            "_blank"
+        );
+
+    } catch (err) {
+        console.error(err);
+        alert("Error saving shipment: " + err.message);
+    }
 };
 </script>
-
-</body>
-</html>
