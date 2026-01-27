@@ -1,99 +1,38 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Nexus Viet Air Cargo – Invoice</title>
-  <style>
-    body { font-family: Arial; max-width: 800px; margin: auto; }
-    h1 { margin-bottom: 5px; }
-    .company { margin-bottom: 20px; }
-    .section { margin-top: 15px; }
-    .label { font-weight: bold; }
-    button { padding: 8px 14px; margin-top: 20px; }
-  </style>
+<title>Invoice</title>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
 </head>
-
 <body>
 
-<h1>Nexus Viet Air Cargo</h1>
+<h2>Nexus Viet Logistics</h2>
+<h2>09 444 679 446</h2>
+<h2>No 9, 3A, MyintMo Street, Sanchaung</h2>
 
-<div class="company">
-  Phone: +95 9444 679 446<br>
-  Email: info@nexusgroupmyanmar.com<br>
-  Address: No 9, 3A, MyintMo Street, Sanchaung, Yangon, Myanmar
-</div>
+<p>Invoice No: <span id="inv"></span></p>
+<p>Tracking No: <span id="trk"></span></p>
 
-<hr>
+<p>Total MMK: <b id="mmk"></b></p>
+<p>Total VND: <b id="vnd"></b></p>
 
-<div class="section">
-  <span class="label">Invoice No:</span> <span id="invoice"></span><br>
-  <span class="label">Tracking No:</span> <span id="tracking"></span><br>
-  <span class="label">Status:</span> <span id="status"></span>
-</div>
-
-<hr>
-
-<div class="section">
-  <h3>Sender</h3>
-  Name: <span id="sender_name"></span><br>
-  Phone: <span id="sender_phone"></span>
-</div>
-
-<div class="section">
-  <h3>Receiver</h3>
-  Name: <span id="receiver_name"></span><br>
-  Phone: <span id="receiver_phone"></span><br>
-  Address: <span id="receiver_address"></span>
-</div>
-
-<hr>
-
-<div class="section">
-  Route: <span id="route"></span><br>
-  Flight Date: <span id="flight_date"></span><br>
-  Item: <span id="item_desc"></span><br>
-  Quantity: <span id="quantity"></span><br>
-  Weight (KG): <span id="weight"></span>
-</div>
-
-<hr>
-
-<div class="section">
-  Handling Fee (MMK): <span id="handling"></span><br>
-  Total MMK: <strong><span id="total_mmk"></span></strong>
-</div>
-
-<button onclick="window.print()">Print Invoice</button>
+<div id="qrcode"></div>
 
 <script>
-const params = new URLSearchParams(window.location.search);
+const params = new URLSearchParams(location.search);
 const tracking = params.get("tracking");
 
-document.getElementById("tracking").innerText = tracking;
+document.getElementById("inv").innerText = params.get("invoice");
+document.getElementById("trk").innerText = tracking;
+document.getElementById("mmk").innerText = params.get("mmk");
+document.getElementById("vnd").innerText = params.get("vnd");
 
-fetch("https://script.google.com/macros/s/AKfycbwoyNzupluztEPyAKdm7jhu8RA-VZkBZ-dBb9Iyu6gDK0oEn_6DMrJgg5SQ6_GA_0wk/exec=" + tracking)
-  .then(res => res.json())
-  .then(data => {
-    document.getElementById("invoice").innerText = data.invoice_no;
-    document.getElementById("status").innerText = data.status;
-
-    document.getElementById("sender_name").innerText = data.sender_name;
-    document.getElementById("sender_phone").innerText = data.sender_phone;
-
-    document.getElementById("receiver_name").innerText = data.receiver_name;
-    document.getElementById("receiver_phone").innerText = data.receiver_phone;
-    document.getElementById("receiver_address").innerText = data.receiver_address;
-
-    document.getElementById("route").innerText = data.route;
-    document.getElementById("flight_date").innerText = data.flight_date;
-    document.getElementById("item_desc").innerText = data.item_desc;
-    document.getElementById("quantity").innerText = data.quantity;
-    document.getElementById("weight").innerText = data.weight_kg;
-
-    document.getElementById("handling").innerText = data.handling_fee_mmk;
-    document.getElementById("total_mmk").innerText = data.total_mmk;
-  });
+new QRCode(document.getElementById("qrcode"), {
+text: `https://track.nexusgroupmyanmar.com/track.html?tracking=${tracking}`,
+width: 150,
+height: 150
+});
 </script>
 
 </body>
-</html>. (correct this one to be able to edit on the admin panel, routes must be optional
+</html>
