@@ -1,38 +1,39 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Invoice</title>
-<script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+  <title>Invoice</title>
+  <base target="_top"> <!-- Important in IFRAME sandbox -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 </head>
-<body>
+<body style="font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; text-align: center;">
 
-<h2>Nexus Viet Logistics</h2>
-<h2>09 444 679 446</h2>
-<h2>No 9, 3A, Myintmo Street, Sanchaung</h2>
+  <h2>Nexus Viet Logistics</h2>
+  <h3>09 444 679 446</h3>
+  <p>No 9, 3A, Myintmo Street, Sanchaung</p>
 
-<p>Invoice No: <span id="inv"></span></p>
-<p>Tracking No: <span id="trk"></span></p>
+  <hr>
 
-<p>Total MMK: <b id="mmk"></b></p>
-<p>Total VND: <b id="vnd"></b></p>
+  <p><strong>Invoice No:</strong> <?!= invoice ?></p>
+  <p><strong>Tracking No:</strong> <?!= tracking ?></p>
 
-<div id="qrcode"></div>
+  <p><strong>Total MMK:</strong> <b><?!= mmk ?></b></p>
+  <p><strong>Total VND:</strong> <b><?!= vnd ?></b></p>
 
-<script>
-const params = new URLSearchParams(location.search);
-const tracking = params.get("tracking");
+  <div id="qrcode" style="margin: 30px auto;"></div>
 
-document.getElementById("inv").innerText = params.get("invoice");
-document.getElementById("trk").innerText = tracking;
-document.getElementById("mmk").innerText = params.get("mmk");
-document.getElementById("vnd").innerText = params.get("vnd");
+  <script>
+    // Use values passed from server (no need for URLSearchParams)
+    const tracking = '<?!= tracking ?>';
 
-new QRCode(document.getElementById("qrcode"), {
-text: `https://track.nexusgroupmyanmar.com/track.html?tracking=${tracking}`,
-width: 150,
-height: 150
-});
-</script>
+    new QRCode(document.getElementById("qrcode"), {
+      text: `https://track.nexusgroupmyanmar.com/track.html?tracking=${tracking}`,
+      width: 180,
+      height: 180,
+      colorDark : "#000000",
+      colorLight : "#ffffff",
+      correctLevel : QRCode.CorrectLevel.H
+    });
+  </script>
 
 </body>
 </html>
