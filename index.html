@@ -1,10 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta http-equiv="refresh" content="0; url=track.html">
-  <title>Redirecting…</title>
+  <title>Nexus Logistics</title>
 </head>
 <body>
-  Redirecting to tracking page…
+
+<h2>Track Your Shipment</h2>
+
+<form onsubmit="go(); return false;">
+  <input id="trk" placeholder="Enter tracking number" required>
+  <button type="submit">Track</button>
+</form>
+
+<script>
+function go() {
+  const t = document.getElementById("trk").value.trim();
+  location.href = `track.html?tracking=${encodeURIComponent(t)}`;
+}
+</script>
+
 </body>
 </html>
