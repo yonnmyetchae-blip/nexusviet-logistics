@@ -1,44 +1,39 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html>
 <head>
-  <title>Track Shipment</title>
+<title>Invoice</title>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
 </head>
 <body>
 
-<h2>Shipment Tracking</h2>
+<h2>Nexus Viet Logistics</h2>
 
-<div id="result">Loading...</div>
+<h2>09 444 679 446</h2>
+
+<h2>No 9, 3A, Myintmo Street, Sanchaung</h2>
+
+<p>Invoice No: <span id="inv"></span></p>
+<p>Tracking No: <span id="trk"></span></p>
+
+<p>Total MMK: <b id="mmk"></b></p>
+<p>Total VND: <b id="vnd"></b></p>
+
+<div id="qrcode"></div>
 
 <script>
-const params = new URLSearchParams(window.location.search);
+const params = new URLSearchParams(location.search);
 const tracking = params.get("tracking");
 
-if (!tracking) {
-  document.getElementById("result").innerText = "Tracking number not found.";
-} else {
-  fetch("https://script.google.com/macros/s/AKfycbwoyNzupluztEPyAKdm7jhu8RA-VZkBZ-dBb9Iyu6gDK0oEn_6DMrJgg5SQ6_GA_0wk/exec?tracking=" + tracking)
-    .then(res => res.json())
-    .then(data => {
-      document.getElementById("result").innerHTML = `
-        <p><b>Tracking No:</b> ${data.tracking_no}</p>
-        <p><b>Status:</b> ${data.status}</p>
-        <p><b>Route:</b> ${data.route}</p>
-        <p><b>Flight Date:</b> ${data.flight_date}</p>
+document.getElementById("inv").innerText = params.get("invoice");
+document.getElementById("trk").innerText = tracking;
+document.getElementById("mmk").innerText = params.get("mmk");
+document.getElementById("vnd").innerText = params.get("vnd");
 
-        <h3>Goods</h3>
-        <p>${data.item_desc}</p>
-        <p><b>Weight:</b> ${data.weight_kg} KG</p>
-
-        <h3>Pricing</h3>
-        <p>Item Fee: ${data.item_fee_mmk} MMK / ${data.item_fee_vnd} VND</p>
-        <p>Rate: ${data.rate_mmk} MMK / ${data.rate_vnd} VND per KG</p>
-        <p><b>Total:</b> ${data.total_mmk} MMK / ${data.total_vnd} VND</p>
-      `;
-    })
-    .catch(() => {
-      document.getElementById("result").innerText = "Tracking not found.";
-    });
-}
+new QRCode(document.getElementById("qrcode"), {
+text: `https://track.nexusgroupmyanmar.com/track.html?tracking=${tracking}`,
+width: 150,
+height: 150
+});
 </script>
 
 </body>
