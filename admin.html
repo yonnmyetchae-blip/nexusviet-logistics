@@ -25,12 +25,11 @@
   Flight Date: <input type="date" id="flight"><br>
   Item Description: <input id="item"><br>
 
-  Quantity: <input type="number" id="quantity"><br>
-  Handling fee: <input type="number" id="handling"><br>
+  Quantity: <input type="number" id="quantity" value="1"><br>
+  Handling fee (MMK): <input type="number" id="handling" value="0"><br>
 
-  Weight (KG): <input type="number" id="weight"><br>
-
-  Rate per KG MMK: <input type="number" id="rateMMK"><br>
+  Weight (KG): <input type="number" id="weight" value="1"><br>
+  Rate per KG MMK: <input type="number" id="rateMMK" value="0"><br>
 
   <button type="submit">Generate Invoice</button>
 </form>
@@ -39,37 +38,62 @@
 document.getElementById("shipmentForm").onsubmit = async function(e) {
   e.preventDefault();
 
+  // 1. Generate IDs
   const tracking = "NXS-" + Date.now();
-  const invoice = "INV-" + new Date().getFullYear() + "-" + Math.floor(Math.random()*1000);
+  const invoice = "INV-" + new Date().getFullYear() + "-" + Math.floor(Math.random() * 1000);
 
-  const weight = +weight.value;
-  const quantity = +quantity.value;
-  const totalMMK = +(quantity * +handling.value) + (weight * +rateMMK.value);
+  // 2. Read values safely
+  const qty = Number(document.getElementById("quantity").value);
+  const handlingFee = Number(document.getElementById("handling").value);
+  const weightKg = Number(document.getElementById("weight").value);
+  const rateMMK = Number(document.getElementById("rateMMK").value);
 
+  // 3. Calculate totals
+  const totalMMK = (qty * handlingFee) + (weightKg * rateMMK);
+  const totalVND = 0;
+
+  // 4. Build payload
   const payload = {
     tracking_no: tracking,
     invoice_no: invoice,
-    sender_name: sender.value,
-    sender_phone: phone.value,
-    route: route.value,
-    flight_date: flight.value,
-    item_desc: item.value,
-    quantity: quantity.value,
-    handling_fee: handling.value,
-    weight_kg: weight,
-    rate_mmk: rateMMK.value,
+    sender_name: document.getElementById("sender").value,
+    sender_phone: document.getElementById("phone").value,
+    receiver_info: document.getElementById("receiver").value,
+    route: document.getElementById("route").value,
+    flight_date: document.getElementById("flight").value,
+    item_desc: document.getElementById("item").value,
+    quantity: qty,
+    handling_fee_mmk: handlingFee,
+    weight_kg: weightKg,
+    rate_mmk: rateMMK,
     total_mmk: totalMMK,
-    total_vnd: "0",
+    total_vnd: totalVND,
     status: "Received",
     remarks: ""
   };
 
-  await fetch("https://script.google.com/macros/s/AKfycbwoyNzupluztEPyAKdm7jhu8RA-VZkBZ-dBb9Iyu6gDK0oEn_6DMrJgg5SQ6_GA_0wk/exec", {
-    method: "POST",
-    body: JSON.stringify(payload)
-  });
+  try {
+    // 5. Send to Apps Script
+    const res = await fetch(
+      "https://script.google.com/macros/s/AKfycbwoyNzupluztEPyAKdm7jhu8RA-VZkBZ-dBb9Iyu6gDK0oEn_6DMrJgg5SQ6_GA_0wk/exec",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      }
+    );
 
-  window.open(`invoice.html?tracking=${tracking}&invoice=${invoice}&mmk=${totalMMK}&vnd=${totalVND}`);
+    // 6. Open invoice popup
+    window.open(
+      `invoice.html?tracking=${tracking}&invoice=${invoice}&mmk=${totalMMK}&vnd=${totalVND}`,
+      "_blank"
+    );
+
+  } catch (err) {
+    alert("Error sending data: " + err.message);
+  }
 };
 </script>
 
