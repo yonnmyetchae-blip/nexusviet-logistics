@@ -16,7 +16,7 @@ const tracking = params.get("tracking");
 if (!tracking) {
   document.getElementById("result").innerText = "Tracking number not found.";
 } else {
-  fetch("https://script.google.com/macros/s/AKfycbwoyNzupluztEPyAKdm7jhu8RA-VZkBZ-dBb9Iyu6gDK0oEn_6DMrJgg5SQ6_GA_0wk/exec?tracking=" + tracking)
+  fetch("PASTE_YOUR_WEB_APP_URL_HERE?tracking=" + tracking)
     .then(res => res.json())
     .then(data => {
       document.getElementById("result").innerHTML = `
@@ -30,8 +30,8 @@ if (!tracking) {
         <p><b>Weight:</b> ${data.weight_kg} KG</p>
 
         <h3>Pricing</h3>
-        <p>Handling Fee: ${data.handling_fee} MMK</p>
-        <p>Rate: ${data.rate_mmk} MMK per KG</p>
+        <p>Item Fee: ${data.item_fee_mmk} MMK / ${data.item_fee_vnd} VND</p>
+        <p>Rate: ${data.rate_mmk} MMK / ${data.rate_vnd} VND per KG</p>
         <p><b>Total:</b> ${data.total_mmk} MMK / ${data.total_vnd} VND</p>
       `;
     })
