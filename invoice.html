@@ -6,13 +6,30 @@
 </head>
 <body>
 
-<h2>Nexus Logistics</h2>
+<h2>Nexus Viet Logistics</h2>
+<p>Invoice: <span id="inv"></span></p>
+<p>Tracking: <span id="trk"></span></p>
 
-<p>Invoice No: <span id="inv"></span></p>
-<p>Tracking No: <span id="trk"></span></p>
+<p>Total MMK: <b id="mmk"></b></p>
+<p>Total VND: <b id="vnd"></b></p>
 
-<h3>Sender</h3>
-<p id="sender"></p>
+<div id="qrcode"></div>
 
-<h3>Receiver</h3>
-<p id="recei
+<script>
+const params = new URLSearchParams(location.search);
+const tracking = params.get("tracking");
+
+document.getElementById("inv").innerText = params.get("invoice");
+document.getElementById("trk").innerText = tracking;
+document.getElementById("mmk").innerText = params.get("mmk");
+document.getElementById("vnd").innerText = params.get("vnd");
+
+new QRCode(document.getElementById("qrcode"), {
+  text: `https://track.html?tracking=${tracking}`,
+  width: 128,
+  height: 128
+});
+</script>
+
+</body>
+</html>
