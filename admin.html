@@ -38,21 +38,17 @@
 document.getElementById("shipmentForm").onsubmit = async function(e) {
   e.preventDefault();
 
-  // 1. Generate IDs
   const tracking = "NXS-" + Date.now();
   const invoice = "INV-" + new Date().getFullYear() + "-" + Math.floor(Math.random() * 1000);
 
-  // 2. Read values safely
   const qty = Number(document.getElementById("quantity").value);
   const handlingFee = Number(document.getElementById("handling").value);
   const weightKg = Number(document.getElementById("weight").value);
   const rateMMK = Number(document.getElementById("rateMMK").value);
 
-  // 3. Calculate totals
   const totalMMK = (qty * handlingFee) + (weightKg * rateMMK);
   const totalVND = 0;
 
-  // 4. Build payload
   const payload = {
     tracking_no: tracking,
     invoice_no: invoice,
@@ -72,20 +68,20 @@ document.getElementById("shipmentForm").onsubmit = async function(e) {
     remarks: ""
   };
 
+  const formData = new FormData();
+  for (const key in payload) {
+    formData.append(key, payload[key]);
+  }
+
   try {
-    // 5. Send to Apps Script
-    const res = await fetch(
+    await fetch(
       "https://script.google.com/macros/s/AKfycbwoyNzupluztEPyAKdm7jhu8RA-VZkBZ-dBb9Iyu6gDK0oEn_6DMrJgg5SQ6_GA_0wk/exec",
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
+        body: formData
       }
     );
 
-    // 6. Open invoice popup
     window.open(
       `invoice.html?tracking=${tracking}&invoice=${invoice}&mmk=${totalMMK}&vnd=${totalVND}`,
       "_blank"
