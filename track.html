@@ -5,37 +5,41 @@
 </head>
 <body>
 
-<h2>Nexus Logistics – Shipment Tracking</h2>
+<h2>Shipment Tracking</h2>
 
-<p><b>Tracking No:</b> <span id="trk"></span></p>
-<p><b>Invoice No:</b> <span id="inv"></span></p>
-<p><b>Status:</b> <span id="status"></span></p>
-
-<h3>Sender</h3>
-<p id="sender"></p>
-
-<h3>Receiver</h3>
-<p id="receiver"></p>
-
-<h3>Shipment Details</h3>
-<p id="route"></p>
-<p id="flight"></p>
-<p id="item"></p>
-<p id="qty"></p>
-<p id="weight"></p>
-
-<h3>Charges</h3>
-<p>Total MMK: <b id="mmk"></b></p>
-<p>Total VND: <b id="vnd"></b></p>
+<div id="result">Loading...</div>
 
 <script>
-const params = new URLSearchParams(location.search);
+const params = new URLSearchParams(window.location.search);
 const tracking = params.get("tracking");
 
-document.getElementById("trk").innerText = tracking;
+if (!tracking) {
+  document.getElementById("result").innerText = "Tracking number not found.";
+} else {
+  fetch("PASTE_YOUR_WEB_APP_URL_HERE?tracking=" + tracking)
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("result").innerHTML = `
+        <p><b>Tracking No:</b> ${data.tracking_no}</p>
+        <p><b>Status:</b> ${data.status}</p>
+        <p><b>Route:</b> ${data.route}</p>
+        <p><b>Flight Date:</b> ${data.flight_date}</p>
 
-fetch(`https://script.google.com/macros/s/AKfycbwoyNzupluztEPyAKdm7jhu8RA-VZkBZ-dBb9Iyu6gDK0oEn_6DMrJgg5SQ6_GA_0wk/exec?tracking=${tracking}`)
-  .then(res => res.json())
-  .then(data => {
+        <h3>Goods</h3>
+        <p>${data.item_desc}</p>
+        <p><b>Weight:</b> ${data.weight_kg} KG</p>
 
-    document.getElementById("inv").innerText
+        <h3>Pricing</h3>
+        <p>Handling Fee: ${data.handling_fee} MMK</p>
+        <p>Rate: ${data.rate_mmk} MMK per KG</p>
+        <p><b>Total:</b> ${data.total_mmk} MMK / ${data.total_vnd} VND</p>
+      `;
+    })
+    .catch(() => {
+      document.getElementById("result").innerText = "Tracking not found.";
+    });
+}
+</script>
+
+</body>
+</html>
