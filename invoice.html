@@ -6,9 +6,10 @@
 </head>
 <body>
 
-<h2>Nexus Viet Logistics</h2>
-<p>Invoice: <span id="inv"></span></p>
-<p>Tracking: <span id="trk"></span></p>
+<h2>Nexus Logistics</h2>
+
+<p>Invoice No: <span id="inv"></span></p>
+<p>Tracking No: <span id="trk"></span></p>
 
 <p>Total MMK: <b id="mmk"></b></p>
 <p>Total VND: <b id="vnd"></b></p>
@@ -26,8 +27,8 @@ document.getElementById("vnd").innerText = params.get("vnd");
 
 new QRCode(document.getElementById("qrcode"), {
   text: `https://track.nexusgroupmyanmar.com/track.html?tracking=${tracking}`,
-  width: 128,
-  height: 128
+  width: 150,
+  height: 150
 });
 </script>
 
