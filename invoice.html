@@ -6,16 +6,16 @@
 </head>
 <body>
 
-<h1>Nexus Logistics</h1>
+<h1>Nexus Viet Logistics</h1>
 
 <div id="invoice"></div>
 <div id="qrcode"></div>
 
 <div style="margin-top:20px; font-size:12px;">
-  Nexus Logistics<br>
-  Phone: +95 9444 679 446<br>
-  Email: info@nexusgroupmyanmar.com<br>
-  Address: No 9, 3A, Myintmo Street, Sanchaung, Yangon, Myanmar
+  Nexus Viet Air Cargo<br>
+  09 444 679 446<br>
+  info@nexusgroupmyanmar.com<br>
+  No 9, 3A, Myintmo Street, Sanchaung, Yangon, Myanmar.
 </div>
 
 <br>
@@ -31,10 +31,15 @@ fetch(API_URL + "?tracking=" + tracking)
 
     invoice.innerHTML = `
       <b>Invoice Number:</b> ${d.invoice_no}<br>
+      
       <b>Tracking Number:</b> ${d.tracking_no}<br>
+      
       <b>Sender Name:</b> ${d.sender_name}<br>
+      
       <b>Route:</b> ${d.route}<br>
+      
       <b>Weight (KG):</b> ${d.weight_kg}<br>
+      
       <b>Total:</b> ${d.total_mmk} MMK / ${d.total_vnd} VND
     `;
 
