@@ -7,19 +7,32 @@
 <body>
 
 <h2>Nexus Logistics</h2>
+
 <div id="invoice"></div>
 <div id="qrcode"></div>
 
+<p style="font-size:12px; margin-top:10px;">
+  Nexus Logistics<br>
+  +95 xxx xxx xxx<br>
+  info@nexusgroupmyanmar.com<br>
+  Yangon, Myanmar
+</p>
+
+<button onclick="window.print()">Print</button>
+
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwoyNzupluztEPyAKdm7jhu8RA-VZkBZ-dBb9Iyu6gDK0oEn_6DMrJgg5SQ6_GA_0wk/exec";
+const API_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL";
 const tracking = new URLSearchParams(window.location.search).get("tracking");
 
 fetch(API_URL + "?tracking=" + tracking)
   .then(r => r.json())
   .then(d => {
     invoice.innerHTML = `
-      <p><b>Invoice:</b> ${d.invoice_no}</p>
-      <p><b>Tracking:</b> ${d.tracking_no}</p>
+      <p><b>Invoice Number:</b> ${d.invoice_no}</p>
+      <p><b>Tracking Number:</b> ${d.tracking_no}</p>
+      <p><b>Sender Name:</b> ${d.sender_name}</p>
+      <p><b>Route:</b> ${d.route}</p>
+      <p><b>Weight:</b> ${d.weight_kg} KG</p>
       <p><b>Total:</b> ${d.total_mmk} MMK / ${d.total_vnd} VND</p>
     `;
 
