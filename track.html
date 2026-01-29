@@ -6,15 +6,11 @@
 <body>
 
 <h2>Shipment Tracking</h2>
-<div id="result">Loading...</div>
+<div id="result"></div>
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbwoyNzupluztEPyAKdm7jhu8RA-VZkBZ-dBb9Iyu6gDK0oEn_6DMrJgg5SQ6_GA_0wk/exec";
 const tracking = new URLSearchParams(window.location.search).get("tracking");
-
-function line(label, value) {
-  return value ? `<p><b>${label}:</b> ${value}</p>` : "";
-}
 
 fetch(API_URL + "?tracking=" + tracking)
   .then(r => r.text())
@@ -25,19 +21,15 @@ fetch(API_URL + "?tracking=" + tracking)
     }
 
     const d = JSON.parse(t);
+    let html = "";
 
-    result.innerHTML =
-      line("Status", d.status) +
-      line("Sender Name", d.sender_name) +
-      line("Sender Phone", d.sender_phone) +
-      line("Receiver Info", d.receiver_info) +
-      line("Route", d.route) +
-      line("Flight Date", d.flight_date) +
-      line("Item", d.item_desc) +
-      line("Quantity", d.quantity) +
-      line("Weight (KG)", d.weight_kg) +
-      line("Handling Fee", d.handling_fee) +
-      line("Total", d.total_mmk + " MMK / " + d.total_vnd + " VND");
+    for (const key in d) {
+      if (d[key] !== "" && d[key] !== null) {
+        html += `<p><b>${key.replace(/_/g, " ")}:</b> ${d[key]}</p>`;
+      }
+    }
+
+    result.innerHTML = html;
   });
 </script>
 
