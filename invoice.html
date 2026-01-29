@@ -30,18 +30,15 @@ fetch(API_URL + "?tracking=" + tracking)
   .then(d => {
 
     invoice.innerHTML = `
-      <b>Invoice Number:</b> ${d.invoice_no}<br>
-      
-      <b>Tracking Number:</b> ${d.tracking_no}<br>
-      
-      <b>Sender Name:</b> ${d.sender_name}<br>
-      
-      <b>Route:</b> ${d.route}<br>
-      
-      <b>Weight (KG):</b> ${d.weight_kg}<br>
-      
-      <b>Total:</b> ${d.total_mmk} MMK / ${d.total_vnd} VND
-    `;
+  <p><b>Invoice Number:</b> ${d.invoice_no}</p>
+  <p><b>Tracking Number:</b> ${d.tracking_no}</p>
+  <p><b>Sender Name:</b> ${d.sender_name || "-"}</p>
+  <p><b>Route:</b> ${d.route}</p>
+  <p><b>Weight (KG):</b> ${d.weight_kg}</p>
+  <p style="margin-top:12px;">
+    <b>Total:</b> ${d.total_mmk} MMK / ${d.total_vnd} VND
+  </p>
+`;
 
     new QRCode(document.getElementById("qrcode"), {
       text: "https://track.nexusgroupmyanmar.com/track.html?tracking=" + d.tracking_no,
