@@ -6,18 +6,19 @@
 </head>
 <body>
 
-<h2>Nexus Logistics</h2>
+<h1>Nexus Logistics</h1>
 
 <div id="invoice"></div>
 <div id="qrcode"></div>
 
-<p style="font-size:12px; margin-top:10px;">
+<div style="margin-top:20px; font-size:12px;">
   Nexus Logistics<br>
-  +95 xxx xxx xxx<br>
-  info@nexusgroupmyanmar.com<br>
-  Yangon, Myanmar
-</p>
+  Phone: +95 9444 679 446<br>
+  Email: info@nexusgroupmyanmar.com<br>
+  Address: No 9, 3A, Myintmo Street, Sanchaung, Yangon, Myanmar
+</div>
 
+<br>
 <button onclick="window.print()">Print</button>
 
 <script>
@@ -27,13 +28,14 @@ const tracking = new URLSearchParams(window.location.search).get("tracking");
 fetch(API_URL + "?tracking=" + tracking)
   .then(r => r.json())
   .then(d => {
+
     invoice.innerHTML = `
-      <p><b>Invoice Number:</b> ${d.invoice_no}</p>
-      <p><b>Tracking Number:</b> ${d.tracking_no}</p>
-      <p><b>Sender Name:</b> ${d.sender_name}</p>
-      <p><b>Route:</b> ${d.route}</p>
-      <p><b>Weight:</b> ${d.weight_kg} KG</p>
-      <p><b>Total:</b> ${d.total_mmk} MMK / ${d.total_vnd} VND</p>
+      <b>Invoice Number:</b> ${d.invoice_no}<br>
+      <b>Tracking Number:</b> ${d.tracking_no}<br>
+      <b>Sender Name:</b> ${d.sender_name}<br>
+      <b>Route:</b> ${d.route}<br>
+      <b>Weight (KG):</b> ${d.weight_kg}<br>
+      <b>Total:</b> ${d.total_mmk} MMK / ${d.total_vnd} VND
     `;
 
     new QRCode(document.getElementById("qrcode"), {
