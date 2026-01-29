@@ -1,35 +1,34 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Invoice</title>
-  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+  <title>Shipment Tracking</title>
 </head>
 <body>
 
-<h2>Nexus Logistics</h2>
-
-<p>Invoice No: <span id="inv"></span></p>
-<p>Tracking No: <span id="trk"></span></p>
-
-<p>Total MMK: <b id="mmk"></b></p>
-<p>Total VND: <b id="vnd"></b></p>
-
-<div id="qrcode"></div>
+<h2>Shipment Tracking</h2>
+<div id="result">Loading...</div>
 
 <script>
-const params = new URLSearchParams(location.search);
-const tracking = params.get("tracking");
+const API_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+const tracking = new URLSearchParams(window.location.search).get("tracking");
 
-document.getElementById("inv").innerText = params.get("invoice");
-document.getElementById("trk").innerText = tracking;
-document.getElementById("mmk").innerText = params.get("mmk");
-document.getElementById("vnd").innerText = params.get("vnd");
-
-new QRCode(document.getElementById("qrcode"), {
-  text: `https://track.nexusgroupmyanmar.com/track.html?tracking=${tracking}`,
-  width: 150,
-  height: 150
-});
+fetch(API_URL + "?tracking=" + tracking)
+  .then(r => r.text())
+  .then(t => {
+    if (t === "NOT FOUND") {
+      result.innerHTML = "Tracking not found.";
+      return;
+    }
+    const d = JSON.parse(t);
+    result.innerHTML = `
+      <b>Status:</b> ${d.status}<br>
+      <b>Route:</b> ${d.route}<br>
+      <b>Flight Date:</b> ${d.flight_date}<br>
+      <b>Item:</b> ${d.item_desc}<br>
+      <b>Weight:</b> ${d.weight_kg} KG<br>
+      <b>Total:</b> ${d.total_mmk} MMK / ${d.total_vnd} VND
+    `;
+  });
 </script>
 
 </body>
