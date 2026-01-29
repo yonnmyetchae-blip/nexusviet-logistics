@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Track Shipment</title>
+  <title>Shipment Tracking</title>
 </head>
 <body>
 
@@ -9,8 +9,12 @@
 <div id="result">Loading...</div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwoyNzupluztEPyAKdm7jhu8RA-VZkBZ-dBb9Iyu6gDK0oEn_6DMrJgg5SQ6_GA_0wk/exec";
+const API_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL";
 const tracking = new URLSearchParams(window.location.search).get("tracking");
+
+function line(label, value) {
+  return value ? `<p><b>${label}:</b> ${value}</p>` : "";
+}
 
 fetch(API_URL + "?tracking=" + tracking)
   .then(r => r.text())
@@ -19,15 +23,21 @@ fetch(API_URL + "?tracking=" + tracking)
       result.innerText = "Tracking not found.";
       return;
     }
+
     const d = JSON.parse(t);
-    result.innerHTML = `
-      <p><b>Status:</b> ${d.status}</p>
-      <p><b>Route:</b> ${d.route}</p>
-      <p><b>Flight Date:</b> ${d.flight_date}</p>
-      <p><b>Item:</b> ${d.item_desc}</p>
-      <p><b>Weight:</b> ${d.weight_kg} KG</p>
-      <p><b>Total:</b> ${d.total_mmk} MMK / ${d.total_vnd} VND</p>
-    `;
+
+    result.innerHTML =
+      line("Status", d.status) +
+      line("Sender Name", d.sender_name) +
+      line("Sender Phone", d.sender_phone) +
+      line("Receiver Info", d.receiver_info) +
+      line("Route", d.route) +
+      line("Flight Date", d.flight_date) +
+      line("Item", d.item_desc) +
+      line("Quantity", d.quantity) +
+      line("Weight (KG)", d.weight_kg) +
+      line("Handling Fee", d.handling_fee) +
+      line("Total", d.total_mmk + " MMK / " + d.total_vnd + " VND");
   });
 </script>
 
