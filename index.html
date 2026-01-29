@@ -1,10 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta http-equiv="refresh" content="0; url=track.html">
-  <title>Redirecting…</title>
+  <title>Nexus Logistics – Track</title>
 </head>
 <body>
-  Redirecting to tracking page…
+
+<h2>Track Your Shipment</h2>
+
+<input id="trackingInput" placeholder="Enter Tracking Number">
+<button onclick="go()">Track</button>
+
+<script>
+function go() {
+  const t = document.getElementById("trackingInput").value;
+  window.location.href = "tracking.html?tracking=" + encodeURIComponent(t);
+}
+</script>
+
 </body>
 </html>
