@@ -1,31 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Shipment Tracking</title>
+  <title>Invoice</title>
 </head>
 <body>
 
-<h2>Shipment Tracking</h2>
-<div id="result">Loading...</div>
+<h2>Nexus Logistics – Invoice</h2>
+<div id="invoice"></div>
 
 <script>
 const API_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
 const tracking = new URLSearchParams(window.location.search).get("tracking");
 
 fetch(API_URL + "?tracking=" + tracking)
-  .then(r => r.text())
-  .then(t => {
-    if (t === "NOT FOUND") {
-      result.innerHTML = "Tracking not found.";
-      return;
-    }
-    const d = JSON.parse(t);
-    result.innerHTML = `
-      <b>Status:</b> ${d.status}<br>
+  .then(r => r.json())
+  .then(d => {
+    invoice.innerHTML = `
+      <b>Invoice No:</b> ${d.invoice_no}<br>
+      <b>Tracking:</b> ${d.tracking_no}<br>
+      <b>Sender:</b> ${d.sender_name}<br>
+      <b>Receiver:</b> ${d.receiver_name}<br>
       <b>Route:</b> ${d.route}<br>
-      <b>Flight Date:</b> ${d.flight_date}<br>
-      <b>Item:</b> ${d.item_desc}<br>
-      <b>Weight:</b> ${d.weight_kg} KG<br>
       <b>Total:</b> ${d.total_mmk} MMK / ${d.total_vnd} VND
     `;
   });
