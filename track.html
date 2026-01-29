@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Shipment Tracking</title>
+  <title>Track Shipment</title>
 </head>
 <body>
 
@@ -15,18 +15,18 @@ const tracking = new URLSearchParams(window.location.search).get("tracking");
 fetch(API_URL + "?tracking=" + tracking)
   .then(r => r.text())
   .then(t => {
-    if (t === "NOT FOUND") {
-      result.innerHTML = "Tracking not found.";
+    if (t === "Not found") {
+      result.innerText = "Tracking not found.";
       return;
     }
     const d = JSON.parse(t);
     result.innerHTML = `
-      <b>Status:</b> ${d.status}<br>
-      <b>Route:</b> ${d.route}<br>
-      <b>Flight Date:</b> ${d.flight_date}<br>
-      <b>Item:</b> ${d.item_desc}<br>
-      <b>Weight:</b> ${d.weight_kg} KG<br>
-      <b>Total:</b> ${d.total_mmk} MMK / ${d.total_vnd} VND
+      <p><b>Status:</b> ${d.status}</p>
+      <p><b>Route:</b> ${d.route}</p>
+      <p><b>Flight Date:</b> ${d.flight_date}</p>
+      <p><b>Item:</b> ${d.item_desc}</p>
+      <p><b>Weight:</b> ${d.weight_kg} KG</p>
+      <p><b>Total:</b> ${d.total_mmk} MMK / ${d.total_vnd} VND</p>
     `;
   });
 </script>
