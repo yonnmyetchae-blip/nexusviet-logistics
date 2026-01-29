@@ -21,7 +21,7 @@
 <button onclick="window.print()">Print</button>
 
 <script>
-const API_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL";
+const API_URL = "https://script.google.com/macros/s/AKfycbwoyNzupluztEPyAKdm7jhu8RA-VZkBZ-dBb9Iyu6gDK0oEn_6DMrJgg5SQ6_GA_0wk/exec";
 const tracking = new URLSearchParams(window.location.search).get("tracking");
 
 fetch(API_URL + "?tracking=" + tracking)
