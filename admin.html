@@ -8,30 +8,35 @@
 <h2>Create Shipment</h2>
 
 <form id="shipmentForm">
-  Sender Name: <input id="sender" required><br><br>
-  Sender Phone: <input id="phone"><br><br>
-  Receiver Info: <input id="receiver"><br><br>
 
-  Route:
-  <select id="route">
-    <option>YGN – DN</option>
-    <option>DN – YGN</option>
-    <option>YGN – SG</option>
-  </select><br><br>
+Sender Name: <input id="sender_name"><br><br>
+Sender Phone: <input id="sender_phone"><br><br>
 
-  Flight Date: <input type="date" id="flight"><br><br>
+Receiver Info (Name / Phone / Address):
+<br>
+<textarea id="receiver_info"></textarea><br><br>
 
-  Item Description: <input id="item"><br><br>
+Route:
+<select id="route">
+  <option>YGN – DN</option>
+  <option>DN – YGN</option>
+  <option>YGN – SG</option>
+</select><br><br>
 
-  Quantity: <input type="number" id="quantity"><br><br>
-  Handling Fee (MMK): <input type="number" id="handling"><br><br>
+Flight Date: <input type="date" id="flight"><br><br>
 
-  Weight (KG): <input type="number" id="weight"><br><br>
-  Rate per KG (MMK): <input type="number" id="rateMMK"><br><br>
+Item Description: <input id="item_desc"><br><br>
 
-  Total VND (manual): <input type="number" id="totalVND"><br><br>
+Quantity: <input type="number" id="quantity"><br><br>
+Handling Fee (MMK): <input type="number" id="handling_fee"><br><br>
 
-  <button type="submit">Generate Invoice</button>
+Weight (KG): <input type="number" id="weight"><br><br>
+Rate per KG (MMK): <input type="number" id="rate_mmk"><br><br>
+
+Total VND (manual): <input type="number" id="total_vnd"><br><br>
+
+<button type="submit">Generate Invoice</button>
+
 </form>
 
 <script>
@@ -43,20 +48,25 @@ document.getElementById("shipmentForm").onsubmit = async function(e) {
   const tracking = "NXS-" + Date.now();
   const invoice = "INV-" + new Date().getFullYear() + "-" + Math.floor(Math.random()*1000);
 
+  const total_mmk =
+    (Number(handling_fee.value) * Number(quantity.value)) +
+    (Number(weight.value) * Number(rate_mmk.value));
+
   const payload = {
     tracking_no: tracking,
     invoice_no: invoice,
-    sender_name: sender.value,
-    sender_phone: phone.value,
-    receiver_info: receiver.value,
+    sender_name: sender_name.value,
+    sender_phone: sender_phone.value,
+    receiver_info: receiver_info.value,
     route: route.value,
     flight_date: flight.value,
-    item_desc: item.value,
+    item_desc: item_desc.value,
     quantity: quantity.value,
-    handling_fee: handling.value,
+    handling_fee: handling_fee.value,
     weight_kg: weight.value,
-    rate_mmk: rateMMK.value,
-    total_vnd: totalVND.value,
+    rate_mmk: rate_mmk.value,
+    total_mmk: total_mmk,
+    total_vnd: total_vnd.value,
     status: "Received",
     remarks: ""
   };
@@ -66,10 +76,7 @@ document.getElementById("shipmentForm").onsubmit = async function(e) {
     body: JSON.stringify(payload)
   });
 
-  window.open(
-    `invoice.html?tracking=${tracking}`,
-    "_blank"
-  );
+  window.open(`invoice.html?tracking=${tracking}`, "_blank");
 };
 </script>
 
