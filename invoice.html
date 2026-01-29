@@ -2,11 +2,13 @@
 <html>
 <head>
   <title>Invoice</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
 </head>
 <body>
 
-<h2>Nexus Logistics – Invoice</h2>
+<h2>Nexus Logistics</h2>
 <div id="invoice"></div>
+<div id="qrcode"></div>
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbwoyNzupluztEPyAKdm7jhu8RA-VZkBZ-dBb9Iyu6gDK0oEn_6DMrJgg5SQ6_GA_0wk/exec";
@@ -16,13 +18,16 @@ fetch(API_URL + "?tracking=" + tracking)
   .then(r => r.json())
   .then(d => {
     invoice.innerHTML = `
-      <b>Invoice No:</b> ${d.invoice_no}<br>
-      <b>Tracking:</b> ${d.tracking_no}<br>
-      <b>Sender:</b> ${d.sender_name}<br>
-      <b>Receiver:</b> ${d.receiver_name}<br>
-      <b>Route:</b> ${d.route}<br>
-      <b>Total:</b> ${d.total_mmk} MMK / ${d.total_vnd} VND
+      <p><b>Invoice:</b> ${d.invoice_no}</p>
+      <p><b>Tracking:</b> ${d.tracking_no}</p>
+      <p><b>Total:</b> ${d.total_mmk} MMK / ${d.total_vnd} VND</p>
     `;
+
+    new QRCode(document.getElementById("qrcode"), {
+      text: "https://track.nexusgroupmyanmar.com/track.html?tracking=" + d.tracking_no,
+      width: 150,
+      height: 150
+    });
   });
 </script>
 
