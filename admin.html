@@ -1,89 +1,79 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Nexus Logistics – Admin</title>
+  <title>Nexus Admin</title>
 </head>
 <body>
 
 <h2>Create Shipment</h2>
 
-<form id="adminForm">
-  Tracking No: <input id="tracking" required><br><br>
-  Invoice No: <input id="invoice"><br><br>
-
-  Sender Name: <input id="sender_name"><br><br>
-  Sender Phone: <input id="sender_phone"><br><br>
-
-  Receiver Name: <input id="receiver_name"><br><br>
-  Receiver Phone: <input id="receiver_phone"><br><br>
+<form id="shipmentForm">
+  Customer Name: <input id="customer"><br><br>
+  Phone: <input id="phone"><br><br>
 
   Route:
   <select id="route">
-    <option>YGN – HCM</option>
-    <option>HCM – YGN</option>
     <option>YGN – DN</option>
     <option>DN – YGN</option>
+    <option>YGN – SG</option>
   </select><br><br>
 
-  Flight Date: <input type="date" id="flight_date"><br><br>
+  Flight Date: <input type="date" id="flight"><br><br>
+  Item Description: <input id="item"><br><br>
 
-  Item Description: <input id="item_desc"><br><br>
-  Item Qty: <input type="number" id="item_qty"><br><br>
-  Weight (KG): <input type="number" id="weight_kg"><br><br>
+  Item Fee MMK: <input type="number" id="itemMMK"><br><br>
+  Item Fee VND: <input type="number" id="itemVND"><br><br>
 
-  Rate MMK: <input type="number" id="rate_mmk"><br><br>
-  Rate VND: <input type="number" id="rate_vnd"><br><br>
+  Weight (KG): <input type="number" id="weight"><br><br>
 
-  Total MMK: <input type="number" id="total_mmk"><br><br>
-  Total VND: <input type="number" id="total_vnd"><br><br>
+  Rate per KG MMK: <input type="number" id="rateMMK"><br><br>
+  Rate per KG VND: <input type="number" id="rateVND"><br><br>
 
-  Status:
-  <select id="status">
-    <option>Received</option>
-    <option>In Transit</option>
-    <option>Arrived</option>
-    <option>Delivered</option>
-  </select><br><br>
-
-  Remarks:<br>
-  <textarea id="remarks"></textarea><br><br>
-
-  <button type="submit">Save Shipment</button>
+  <button type="submit">Generate Invoice</button>
 </form>
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbwoyNzupluztEPyAKdm7jhu8RA-VZkBZ-dBb9Iyu6gDK0oEn_6DMrJgg5SQ6_GA_0wk/exec";
 
-document.getElementById("adminForm").addEventListener("submit", function(e){
+document.getElementById("shipmentForm").onsubmit = async function(e) {
   e.preventDefault();
 
-  const data = {
-    tracking_no: tracking.value,
-    invoice_no: invoice.value,
-    sender_name: sender_name.value,
-    sender_phone: sender_phone.value,
-    receiver_name: receiver_name.value,
-    receiver_phone: receiver_phone.value,
+  const tracking = "NXS-" + Date.now();
+  const invoice = "INV-" + new Date().getFullYear() + "-" + Math.floor(Math.random()*1000);
+
+  const weightVal = +weight.value;
+  const totalMMK = +itemMMK.value + (weightVal * +rateMMK.value);
+  const totalVND = +itemVND.value + (weightVal * +rateVND.value);
+
+  const payload = {
+    tracking_no: tracking,
+    invoice_no: invoice,
+    customer_name: customer.value,
+    phone: phone.value,
     route: route.value,
-    flight_date: flight_date.value,
-    item_desc: item_desc.value,
-    item_qty: item_qty.value,
-    weight_kg: weight_kg.value,
-    rate_mmk: rate_mmk.value,
-    rate_vnd: rate_vnd.value,
-    total_mmk: total_mmk.value,
-    total_vnd: total_vnd.value,
-    status: status.value,
-    remarks: remarks.value
+    flight_date: flight.value,
+    item_desc: item.value,
+    item_fee_mmk: itemMMK.value,
+    item_fee_vnd: itemVND.value,
+    weight_kg: weightVal,
+    rate_mmk: rateMMK.value,
+    rate_vnd: rateVND.value,
+    total_mmk: totalMMK,
+    total_vnd: totalVND,
+    status: "Received",
+    remarks: ""
   };
 
-  fetch(API_URL, {
+  await fetch(API_URL, {
     method: "POST",
-    body: JSON.stringify(data)
-  })
-  .then(r => r.text())
-  .then(() => alert("Shipment saved"));
-});
+    body: JSON.stringify(payload)
+  });
+
+  window.open(
+    `invoice.html?tracking=${tracking}`,
+    "_blank"
+  );
+};
 </script>
 
 </body>
