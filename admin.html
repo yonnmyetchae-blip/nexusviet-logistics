@@ -42,43 +42,56 @@ Total VND (manual): <input type="number" id="total_vnd"><br><br>
 <script>
 const API_URL = "https://script.google.com/u/0/home/projects/1raoqmSjafnU6Q27ui_0ZGhYpsfuT9mvpbljWi6-aHc4RqAsoAX806v4H/edit";
 
-document.getElementById("shipmentForm").onsubmit = async function(e) {
+const el = (id) => document.getElementById(id);
+
+document.getElementById("shipmentForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const tracking = "NXS-" + Date.now();
-  const invoice = "INV-" + new Date().getFullYear() + "-" + Math.floor(Math.random()*1000);
+  const invoice = "INV-" + new Date().getFullYear() + "-" + Math.floor(Math.random() * 1000);
 
-  const total_mmk =
-    (Number(handling_fee.value) * Number(quantity.value)) +
-    (Number(weight.value) * Number(rate_mmk.value));
+  const sender_name = el("sender_name").value.trim();
+  const sender_phone = el("sender_phone").value.trim();
+  const receiver_info = el("receiver_info").value.trim();
+  const route = el("route").value;
+  const flight_date = el("flight").value;
+  const item_desc = el("item_desc").value.trim();
+
+  const quantity = Number(el("quantity").value || 0);
+  const handling_fee = Number(el("handling_fee").value || 0);
+  const weight_kg = Number(el("weight").value || 0);
+  const rate_mmk = Number(el("rate_mmk").value || 0);
+
+  // VOL 2 LOCKED RULE (admin side only)
+  const total_mmk = (handling_fee * quantity) + (weight_kg * rate_mmk);
+
+  const total_vnd = el("total_vnd").value; // manual input (keep as typed)
 
   const payload = {
     tracking_no: tracking,
     invoice_no: invoice,
-    sender_name: sender_name.value,
-    sender_phone: sender_phone.value,
-    receiver_info: receiver_info.value,
-    route: route.value,
-    flight_date: flight.value,
-    item_desc: item_desc.value,
-    quantity: quantity.value,
-    handling_fee: handling_fee.value,
-    weight_kg: weight.value,
-    rate_mmk: rate_mmk.value,
-    total_mmk: total_mmk,
-    total_vnd: total_vnd.value,
+    sender_name,
+    sender_phone,
+    receiver_info,
+    route,
+    flight_date,
+    item_desc,
+    quantity,
+    handling_fee,
+    weight_kg,
+    rate_mmk,
+    total_mmk,
+    total_vnd,
     status: "Received",
     remarks: ""
   };
 
   await fetch(API_URL, {
     method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload)
   });
 
   window.open(`invoice.html?tracking=${tracking}`, "_blank");
-};
+});
 </script>
-
-</body>
-</html>
