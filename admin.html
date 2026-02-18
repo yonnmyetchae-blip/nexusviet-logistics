@@ -62,10 +62,9 @@ document.getElementById("shipmentForm").addEventListener("submit", async (e) => 
   const weight_kg = Number(el("weight").value || 0);
   const rate_mmk = Number(el("rate_mmk").value || 0);
 
-  // VOL 2 LOCKED RULE (admin side only)
   const total_mmk = (handling_fee * quantity) + (weight_kg * rate_mmk);
 
-  const total_vnd = el("total_vnd").value; // manual input (keep as typed)
+  const total_vnd = el("total_vnd").value; // 
 
   const payload = {
     tracking_no: tracking,
