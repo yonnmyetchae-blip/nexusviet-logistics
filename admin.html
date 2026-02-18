@@ -1,122 +1,76 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Nexus Admin</title>
+  <title>Nexus Admin – Create Shipment</title>
 </head>
 <body>
 
 <h2>Create Shipment</h2>
 
-<label>Sender Name</label><br>
-<input id="sender_name" /><br><br>
+<form id="shipmentForm">
+  Sender Name: <input required id="sender"><br>
+  Sender Phone: <input id="phone"><br>
+  Receiver Information: <input required id="receiver"><br>
 
-<label>Sender Phone</label><br>
-<input id="sender_phone" /><br><br>
+  Route:
+  <select id="route">
+    <option>YGN – HCM</option>
+    <option>YGN – Hanoi</option>
+    <option>YGN – DaNang</option>
+    <option>HCM – YGN</option>
+    <option>Hanoi – YGN</option>
+    <option>DaNang – YGN</option>
+  </select><br>
 
-<label>Receiver Info</label><br>
-<input id="receiver_info" placeholder="Name / Phone / Address" /><br><br>
+  Flight Date: <input type="date" id="flight"><br>
+  Item Description: <input id="item"><br>
 
-<label>Route</label><br>
-<select id="route">
-  <option value="YGN – DN">YGN – Ho Chi Minh</option>
-  <option value="DN – YGN">YGN – Da Nang</option>
-  <option value="DN – YGN">YGN – Hanoi</option>
-</select><br><br>
+  Quantity: <input type="number" id="quantity"><br>
+  Handling fee: <input type="number" id="handling"><br>
 
-<label>Flight Date</label><br>
-<input type="date" id="flight_date" /><br><br>
+  Weight (KG): <input type="number" id="weight"><br>
 
-<label>Item Description</label><br>
-<input id="item_desc" /><br><br>
+  Rate per KG MMK: <input type="number" id="rateMMK"><br>
 
-<label>Quantity</label><br>
-<input type="number" id="quantity" /><br><br>
-
-<label>Handling Fee (MMK)</label><br>
-<input type="number" id="handling_fee" /><br><br>
-
-<label>Weight (KG)</label><br>
-<input type="number" id="weight_kg" /><br><br>
-
-<label>Rate per KG (MMK)</label><br>
-<input type="number" id="rate_mmk" /><br><br>
-
-<label>Total VND</label><br>
-<input type="number" id="total_vnd" /><br><br>
-
-<label>Status</label><br>
-<select id="status">
-  <option value="Received">Received</option>
-  <option value="In Transit">In Transit</option>
-  <option value="Arrived">Arrived</option>
-  <option value="Delivered">Delivered</option>
-</select><br><br>
-
-<button id="btnCreate" type="button">Create</button>
+  <button type="submit">Generate Invoice</button>
+</form>
 
 <script>
-const API_URL = "https://script.google.com/u/0/home/projects/1raoqmSjafnU6Q27ui_0ZGhYpsfuT9mvpbljWi6-aHc4RqAsoAX806v4H/edit";
+document.getElementById("shipmentForm").onsubmit = async function(e) {
+  e.preventDefault();
 
-document.getElementById("btnCreate").addEventListener("click", async () => {
+  const tracking = "NXS-" + Date.now();
+  const invoice = "INV-" + new Date().getFullYear() + "-" + Math.floor(Math.random()*1000);
 
-  // ✅ READ VALUES BY ID (NO implicit variables)
-  const sender_name   = document.getElementById("sender_name").value.trim();
-  const sender_phone  = document.getElementById("sender_phone").value.trim();
-  const receiver_info = document.getElementById("receiver_info").value.trim();
-  const route         = document.getElementById("route").value;
-  const flight_date   = document.getElementById("flight_date").value; // yyyy-mm-dd
-  const item_desc     = document.getElementById("item_desc").value.trim();
+  const weight = +weight.value;
+  const quantity = +quantity.value;
+  const totalMMK = +(quantity * +handling.value) + (weight * +rateMMK.value);
 
-  const quantity      = Number(document.getElementById("quantity").value || 0);
-  const handling_fee  = Number(document.getElementById("handling_fee").value || 0);
-  const weight_kg     = Number(document.getElementById("weight_kg").value || 0);
-  const rate_mmk      = Number(document.getElementById("rate_mmk").value || 0);
-
-  const total_vnd     = document.getElementById("total_vnd").value; // manual, keep as text/number
-  const status        = document.getElementById("status").value;
-
-  // ✅ IDs (same logic)
-  const tracking_no = "NXS-" + Date.now();
-  const invoice_no  = "INV-2026-" + Math.floor(Math.random() * 1000);
-
-  // ✅ Total MMK formula (locked by your spec)
-  const total_mmk = (handling_fee * quantity) + (weight_kg * rate_mmk);
-
-  // ✅ Payload keys MUST match Apps Script & Sheet headers
-  const data = {
-    tracking_no,
-    invoice_no,
-    sender_name,
-    sender_phone,
-    receiver_info,
-    route,
-    flight_date,
-    item_desc,
-    quantity,
-    handling_fee,
-    weight_kg,
-    rate_mmk,
-    total_mmk,
-    total_vnd,
-    status,
+  const payload = {
+    tracking_no: tracking,
+    invoice_no: invoice,
+    sender_name: sender.value,
+    sender_phone: phone.value,
+    route: route.value,
+    flight_date: flight.value,
+    item_desc: item.value,
+    quantity: quantity.value,
+    handling_fee: handling.value,
+    weight_kg: weight,
+    rate_mmk: rateMMK.value,
+    total_mmk: totalMMK,
+    total_vnd: "0",
+    status: "Received",
     remarks: ""
   };
 
-  const res = await fetch(API_URL, {
+  await fetch("https://script.google.com/macros/s/AKfycbwoyNzupluztEPyAKdm7jhu8RA-VZkBZ-dBb9Iyu6gDK0oEn_6DMrJgg5SQ6_GA_0wk/exec", {
     method: "POST",
-    body: JSON.stringify(data)
+    body: JSON.stringify(payload)
   });
 
-  const text = await res.text();
-  if (text.trim() !== "SUCCESS") {
-    alert("Save failed: " + text);
-    return;
-  }
-
-  // ✅ Open invoice like before
-  window.location.href = "invoice.html?tracking=" + tracking_no;
-});
+  window.open(`invoice.html?tracking=${tracking}&invoice=${invoice}&mmk=${totalMMK}&vnd=${totalVND}`);
+};
 </script>
 
 </body>
