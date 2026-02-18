@@ -45,9 +45,18 @@ const API_URL = "https://script.google.com/u/0/home/projects/1raoqmSjafnU6Q27ui_
 document.getElementById("shipmentForm").onsubmit = async function(e) {
   e.preventDefault();
 
+  // ✅ FIX: open window immediately (prevents popup blocker)
+  const invoiceWin = window.open("", "_blank");
+
+  if (!invoiceWin) {
+    alert("Popup blocked. Please allow popups for this site and try again.");
+    return;
+  }
+
   const tracking = "NXS-" + Date.now();
   const invoice = "INV-" + new Date().getFullYear() + "-" + Math.floor(Math.random()*1000);
 
+  // ✅ LOCKED formula (unchanged)
   const total_mmk =
     (Number(handling_fee.value) * Number(quantity.value)) +
     (Number(weight.value) * Number(rate_mmk.value));
@@ -71,12 +80,22 @@ document.getElementById("shipmentForm").onsubmit = async function(e) {
     remarks: ""
   };
 
-  await fetch(API_URL, {
-    method: "POST",
-    body: JSON.stringify(payload)
-  });
+  // Optional: show loading message in the opened window
+  invoiceWin.document.write("<p style='font-family:Arial'>Generating invoice...</p>");
 
-  window.open(`invoice.html?tracking=${tracking}`, "_blank");
+  try {
+    await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify(payload)
+    });
+
+    // ✅ Redirect the already-opened window (won't be blocked)
+    invoiceWin.location.href = `invoice.html?tracking=${tracking}`;
+  } catch (err) {
+    invoiceWin.close();
+    alert("Failed to save shipment. Please try again.");
+    console.error(err);
+  }
 };
 </script>
 
